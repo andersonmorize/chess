@@ -993,6 +993,19 @@
         }
       };
 
+      const setupModulesFallback = () => {
+        const modules = Array.from(document.querySelectorAll('.modules__list details'));
+        if (modules.length === 0) return;
+        if ('name' in document.createElement('details')) return;
+
+        modules.forEach((detail) => {
+          detail.addEventListener('toggle', () => {
+            if (!detail.open) return;
+            modules.forEach((item) => { if (item !== detail) item.open = false; });
+          });
+        });
+      };
+
       const setupFaqFallback = () => {
         const faqDetails = Array.from(document.querySelectorAll('.faq details'));
         if (faqDetails.length === 0) return;
@@ -1057,6 +1070,7 @@
       const init = () => {
         setupYear();
         setupReveal();
+        setupModulesFallback();
         setupFaqFallback();
         setupVideoFacade();
         setupDebugLcp();
