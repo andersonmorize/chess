@@ -1284,15 +1284,16 @@ footer[id] {
 
 
 /* Videos */
-/* Container relativo para permitir máscaras sobre o iframe do YouTube */
+/* Container relativo (necessário para posicionar as máscaras) */
 .video-sales__embed,
 .testimonial__embed {
   position: relative;
+  isolation: isolate; /* cria stacking context próprio; garante que o ::after fique acima do iframe */
 }
 
+/* Máscara superior — já funcionava, mantida */
 .video-sales__embed::before,
 .testimonial__embed::before {
-  /* bloqueia o título/overlay do topo */
   content: "";
   position: absolute;
   top: 0;
@@ -1300,20 +1301,29 @@ footer[id] {
   width: 100%;
   height: 14%;
   z-index: 2;
-  pointer-events: auto;   /* captura o clique */
+  pointer-events: auto;
 }
 
+/* Máscara inferior — cobre a barra de controles inteira (altura ~12% do vídeo) */
 .video-sales__embed::after,
 .testimonial__embed::after {
-  /* bloqueia o logotipo inferior direito */
   content: "";
   position: absolute;
-  right: 0;
   bottom: 0;
-  width: 80px;
-  height: 46px;
+  right: 0;
+  width: 22%;        /* cobre logo + margem; proporcional à largura */
+  height: 13%;       /* cobre a barra de controles inteira verticalmente */
   z-index: 2;
   pointer-events: auto;
+}
+
+/* Em telas pequenas o logo cresce proporcionalmente: aumente a máscara */
+@media (max-width: 767px) {
+  .video-sales__embed::after,
+  .testimonial__embed::after {
+    width: 28%;
+    height: 16%;
+  }
 }
 
 /* Animação de entrada */
