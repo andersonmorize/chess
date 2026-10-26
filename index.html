@@ -31,16 +31,182 @@
   <meta name="twitter:image:alt" content="Silhueta de um fotógrafo caminhando em um campo de capim alto ao entardecer.">
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+  <!--
+    Fontes:
+    - Reduzidas aos pesos realmente usados (Cormorant 400/500/itálico 400; Inter 400/600).
+    - display=swap garante texto visível imediatamente.
+    - RECOMENDAÇÃO: migrar para self-host (woff2 em /fonts/) e remover os preconnects
+      abaixo. Self-host elimina o round-trip a fonts.gstatic.com e melhora o FCP em
+      ~150–300 ms no 4G lento.
+  -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://pay.hotmart.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;600&display=swap"
+    rel="stylesheet"
+  >
 
-  <!-- Preload do hero: prioriza AVIF (melhor compressão) e cai para WebP/JPEG -->
+  <!-- Preload do hero: AVIF primeiro, WebP como fallback de formato -->
   <link rel="preload" as="image" href="images/hero-alta-qualidade.avif" type="image/avif" fetchpriority="high">
   <link rel="preload" as="image" href="images/hero-alta-qualidade.webp" type="image/webp" fetchpriority="high">
 
-  <link rel="stylesheet" href="style.css">
+  <!--
+    CSS CRÍTICO INLINE:
+    Contém apenas o necessário para o primeiro paint (hero, header, tipografia base,
+    botões). O restante de style.css é carregado de forma não-bloqueante abaixo.
+  -->
+  <style>
+    /* ---------- Reset mínimo ---------- */
+    *,*::before,*::after{box-sizing:border-box}
+    html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+    body{margin:0}
+    img,picture,video,canvas,svg{display:block;max-width:100%}
+    img{height:auto}
+    button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+    a{color:inherit;text-decoration:none}
+
+    /* ---------- Tokens (subset crítico) ---------- */
+    :root{
+      --bg:#0a0a0a;
+      --fg:#f5f2ec;
+      --fg-muted:#b8b2a7;
+      --accent:#e8c477;
+      --accent-strong:#f0d18f;
+      --serif:"Cormorant Garamond",Georgia,serif;
+      --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+      --container-max:1180px;
+      --gutter:clamp(1rem,4vw,2.5rem);
+    }
+
+    body{
+      background:var(--bg);
+      color:var(--fg);
+      font-family:var(--sans);
+      font-size:1rem;
+      line-height:1.6;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+
+    /* ---------- Container ---------- */
+    .container{
+      width:100%;
+      max-width:var(--container-max);
+      margin-inline:auto;
+      padding-inline:var(--gutter);
+    }
+
+    /* ---------- Skip link ---------- */
+    .skip-link{
+      position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;
+    }
+    .skip-link:focus{
+      position:fixed;left:1rem;top:1rem;width:auto;height:auto;padding:.6rem 1rem;
+      background:var(--accent);color:#111;border-radius:.4rem;z-index:9999;
+    }
+
+    /* ---------- Tipografia base ---------- */
+    h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.1;margin:0 0 .4em}
+    h1{font-size:clamp(2.6rem,7vw,5.2rem);letter-spacing:-.01em}
+    h2{font-size:clamp(1.8rem,4vw,2.8rem)}
+    h3{font-size:clamp(1.1rem,2.2vw,1.35rem)}
+    p{margin:0 0 1em}
+
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:.6rem;
+      font-family:var(--sans);font-size:.78rem;font-weight:600;
+      letter-spacing:.16em;text-transform:uppercase;color:var(--accent);
+      margin:0 0 1rem;
+    }
+    .eyebrow__line{display:inline-block;width:2.5rem;height:1px;background:currentColor;opacity:.7}
+
+    /* ---------- Botões (crítico: aparece no hero) ---------- */
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:.5rem;padding:.95rem 1.6rem;border-radius:999px;
+      font-family:var(--sans);font-weight:600;font-size:.95rem;
+      letter-spacing:.02em;line-height:1;cursor:pointer;
+      transition:transform .15s ease,background-color .15s ease,color .15s ease;
+      will-change:transform;
+    }
+    .btn--primary{
+      background:var(--accent);color:#111;
+      box-shadow:0 8px 24px -12px rgba(232,196,119,.6);
+    }
+    .btn--primary:hover{background:var(--accent-strong);transform:translateY(-1px)}
+    .btn--large{padding:1.1rem 2rem;font-size:1rem}
+
+    /* ---------- HERO (LCP candidate) ---------- */
+    .hero{
+      position:relative;
+      min-height:100svh;
+      display:flex;align-items:flex-end;
+      overflow:hidden;
+      isolation:isolate;
+      color:var(--fg);
+      background:#111; /* cor de fundo para evitar flash branco antes do LCP */
+    }
+    .hero picture{display:block;position:absolute;inset:0;z-index:-2}
+    .hero__media{
+      width:100%;height:100%;
+      object-fit:cover;
+      /* garante que a imagem ocupe a área do hero e seja pintada cedo */
+      object-position:center 40%;
+    }
+    .hero__overlay{
+      position:absolute;inset:0;z-index:-1;
+      background:
+        linear-gradient(to top, rgba(10,10,10,.85) 0%, rgba(10,10,10,.25) 45%, rgba(10,10,10,.35) 100%);
+    }
+    .hero__inner{
+      display:flex;flex-direction:column;justify-content:flex-end;
+      gap:2rem;padding-block:clamp(2rem,6vw,5rem);
+      width:100%;
+    }
+    .hero__content{max-width:44rem}
+    .hero__promise{
+      font-size:clamp(1rem,1.4vw,1.15rem);
+      color:var(--fg-muted);max-width:36rem;margin:.8rem 0 1.6rem;
+    }
+    .hero__actions{display:flex;flex-direction:column;gap:.9rem;align-items:flex-start}
+    .hero__meta{font-size:.82rem;color:var(--fg-muted);letter-spacing:.02em;margin:0}
+    .hero__scroll{
+      align-self:flex-end;font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;
+      color:var(--fg-muted);display:inline-flex;align-items:center;gap:.5rem;margin:0;
+    }
+    .hero__scroll span{
+      display:inline-block;width:1.2rem;height:1.2rem;border-right:1px solid currentColor;
+      border-bottom:1px solid currentColor;transform:rotate(45deg);
+      animation:heroScroll 2.4s ease-in-out infinite;
+    }
+    @keyframes heroScroll{
+      0%,100%{transform:rotate(45deg) translate(0,0);opacity:.6}
+      50%{transform:rotate(45deg) translate(.2rem,.2rem);opacity:1}
+    }
+
+    /* ---------- Reduced motion ---------- */
+    @media (prefers-reduced-motion: reduce){
+      *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+      .hero__scroll span{animation:none}
+    }
+  </style>
+
+  <!--
+    CSS não-crítico carregado de forma não-bloqueante.
+    O navegador baixa em paralelo, mas não bloqueia o render.
+    Quando termina, aplica as regras restantes (seções abaixo da dobra, FAQ, footer etc.).
+  -->
+  <link
+    rel="stylesheet"
+    href="style.css"
+    media="print"
+    onload="this.media='all'"
+  >
+  <noscript>
+    <link rel="stylesheet" href="style.css">
+  </noscript>
 
   <script>document.documentElement.classList.add('js');</script>
 
@@ -86,16 +252,14 @@
 
   <!-- Hero -->
   <header class="hero" id="inicio">
+    <!--
+      Hero como <picture> com AVIF → WebP → JPEG.
+      O <img> é filho direto de <picture> e continua sendo o candidato a LCP.
+      Removido o <source media="(min-width: 0px)"> redundante que pode confundir o heurístico.
+    -->
     <picture>
-      <source
-        srcset="images/hero-alta-qualidade.avif"
-        type="image/avif"
-        media="(min-width: 0px)"
-      >
-      <source
-        srcset="images/hero-alta-qualidade.webp"
-        type="image/webp"
-      >
+      <source srcset="images/hero-alta-qualidade.avif" type="image/avif">
+      <source srcset="images/hero-alta-qualidade.webp" type="image/webp">
       <img
         class="hero__media"
         src="images/hero-alta-qualidade.jpeg"
@@ -126,20 +290,43 @@
   </header>
 
   <main id="conteudo" tabindex="-1">
-    <!-- Vídeo de vendas -->
+    <!-- Vídeo de vendas — com facade (iframe só no clique) -->
     <section class="section video-sales" id="video" aria-labelledby="video-title">
       <div class="container video-sales__inner" data-reveal>
         <p class="eyebrow"><span class="eyebrow__line" aria-hidden="true"></span>Conheça o curso</p>
         <h2 id="video-title">Uma amostra do que você vai encontrar.</h2>
-        <div class="video-sales__embed">
-          <iframe
-            src="https://www.youtube-nocookie.com/embed/MlR1fPLTnyA?rel=0"
-            title="Fotografia Além da Imagem — apresentação do curso"
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen
-          ></iframe>
+
+        <!--
+          FACADE DO YOUTUBE:
+          - Antes do clique: thumbnail local + botão play (zero JS de terceiros).
+          - No clique: injeta o iframe real do YouTube (autoplay).
+          - Economiza ~1 MB de JS e elimina TBT de terceiros no load inicial.
+          - A thumbnail usa o próprio thumbnail do YouTube (i.ytimg.com) para não
+            precisar de arquivo local. Se preferir 100% local, baixe a thumbnail
+            para images/video-thumb.jpg e troque o src abaixo.
+        -->
+        <div class="video-sales__embed" data-video-facade data-video-id="MlR1fPLTnyA">
+          <button
+            type="button"
+            class="video-sales__play"
+            aria-label="Reproduzir vídeo de apresentação do curso"
+          >
+            <img
+              src="https://i.ytimg.com/vi/MlR1fPLTnyA/maxresdefault.jpg"
+              alt=""
+              width="1280"
+              height="720"
+              loading="lazy"
+              decoding="async"
+              onerror="this.src='https://i.ytimg.com/vi/MlR1fPLTnyA/hqdefault.jpg'"
+            >
+            <span class="video-sales__play-icon" aria-hidden="true">
+              <svg viewBox="0 0 68 48" width="68" height="48" focusable="false">
+                <path fill="#f00" d="M66.5 7.6a8.5 8.5 0 0 0-6-6C55.2.5 34 .5 34 .5S12.8.5 7.5 1.6a8.5 8.5 0 0 0-6 6A88.6 88.6 0 0 0 .5 24a88.6 88.6 0 0 0 1 16.4 8.5 8.5 0 0 0 6 6c5.3 1.1 26.5 1.1 26.5 1.1s21.2 0 26.5-1.1a8.5 8.5 0 0 0 6-6A88.6 88.6 0 0 0 67.5 24a88.6 88.6 0 0 0-1-16.4z"/>
+                <path fill="#fff" d="M27 34.5 45 24 27 13.5z"/>
+              </svg>
+            </span>
+          </button>
         </div>
         <noscript>
           <p class="video-sales__fallback"><a href="https://www.youtube.com/watch?v=MlR1fPLTnyA" target="_blank" rel="noopener noreferrer">Assista à apresentação no YouTube</a></p>
@@ -716,17 +903,14 @@
 
   <script>
     (() => {
-      const revealElements = document.querySelectorAll('[data-reveal]');
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const revealAll = () => {
-        revealElements.forEach((element) => element.classList.add('is-visible'));
-      };
+      const revealElements = document.querySelectorAll('[data-reveal]');
+      const revealAll = () => revealElements.forEach((el) => el.classList.add('is-visible'));
 
       const yearElement = document.getElementById('ano-atual');
-      if (yearElement) {
-        yearElement.textContent = new Date().getFullYear();
-      }
+      if (yearElement) yearElement.textContent = new Date().getFullYear();
 
+      /* ---------- Reveal on scroll ---------- */
       if (!('IntersectionObserver' in window) || reduceMotion) {
         revealAll();
       } else {
@@ -738,30 +922,64 @@
                 observer.unobserve(entry.target);
               }
             });
-          }, {
-            threshold: 0.12,
-            rootMargin: '0px 0px -8% 0px'
-          });
-
-          revealElements.forEach((element) => observer.observe(element));
+          }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+          revealElements.forEach((el) => observer.observe(el));
         } catch {
           revealAll();
         }
       }
 
+      /* ---------- FAQ fallback ---------- */
       const faqDetails = Array.from(document.querySelectorAll('.faq details'));
       if (faqDetails.length > 0 && !('name' in document.createElement('details'))) {
         faqDetails.forEach((detail) => {
           detail.addEventListener('toggle', () => {
             if (!detail.open) return;
-            faqDetails.forEach((item) => {
-              if (item !== detail) item.open = false;
-            });
+            faqDetails.forEach((item) => { if (item !== detail) item.open = false; });
           });
         });
+      }
+
+      /* ---------- FACADE DO YOUTUBE ----------
+         Só injeta o iframe quando o usuário clica. Zero JS de terceiros no load.
+         O iframe usa youtube-nocookie e autoplay=1. */
+      document.querySelectorAll('[data-video-facade]').forEach((facade) => {
+        const btn = facade.querySelector('.video-sales__play');
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+          const id = facade.getAttribute('data-video-id');
+          if (!id) return;
+          const iframe = document.createElement('iframe');
+          iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+          iframe.title = 'Fotografia Além da Imagem — apresentação do curso';
+          iframe.loading = 'lazy';
+          iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+          iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+          iframe.allowFullscreen = true;
+          facade.replaceChildren(iframe);
+        }, { once: true });
+      });
+
+      /* ---------- DIAGNÓSTICO DE LCP (opcional) ----------
+         Acesse a página com ?debug=lcp para logar o elemento LCP no console.
+         Útil para resolver o erro NO_LCP do Lighthouse. */
+      if (new URLSearchParams(location.search).get('debug') === 'lcp') {
+        try {
+          new PerformanceObserver((list) => {
+            const entries = list.getEntries();
+            const last = entries[entries.length - 1];
+            console.log('[LCP]', {
+              time: Math.round(last.startTime),
+              element: last.element,
+              url: last.url,
+              size: last.size
+            });
+          }).observe({ type: 'largest-contentful-paint', buffered: true });
+        } catch (e) {
+          console.warn('LCP observer indisponível', e);
+        }
       }
     })();
   </script>
 </body>
 </html>
-
