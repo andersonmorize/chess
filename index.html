@@ -35,7 +35,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://pay.hotmart.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="preload" as="image" href="images/hero-alta-qualidade.jpeg" fetchpriority="high">
+
+  <!-- Preload do hero: prioriza AVIF (melhor compressão) e cai para WebP/JPEG -->
+  <link rel="preload" as="image" href="images/hero-alta-qualidade.avif" type="image/avif" fetchpriority="high">
+  <link rel="preload" as="image" href="images/hero-alta-qualidade.webp" type="image/webp" fetchpriority="high">
+
   <link rel="stylesheet" href="style.css">
 
   <script>document.documentElement.classList.add('js');</script>
@@ -82,15 +86,26 @@
 
   <!-- Hero -->
   <header class="hero" id="inicio">
-    <img
-      class="hero__media"
-      src="images/hero-alta-qualidade.jpeg"
-      alt="Silhueta de um fotógrafo caminhando em um campo de capim alto ao entardecer."
-      width="1996"
-      height="2048"
-      fetchpriority="high"
-      decoding="async"
-    >
+    <picture>
+      <source
+        srcset="images/hero-alta-qualidade.avif"
+        type="image/avif"
+        media="(min-width: 0px)"
+      >
+      <source
+        srcset="images/hero-alta-qualidade.webp"
+        type="image/webp"
+      >
+      <img
+        class="hero__media"
+        src="images/hero-alta-qualidade.jpeg"
+        alt="Silhueta de um fotógrafo caminhando em um campo de capim alto ao entardecer."
+        width="1996"
+        height="2048"
+        fetchpriority="high"
+        decoding="async"
+      >
+    </picture>
     <div class="hero__overlay" aria-hidden="true"></div>
 
     <div class="container hero__inner">
@@ -137,14 +152,17 @@
     <section class="section about" id="autor" aria-label="Sobre o autor">
       <div class="container about__grid">
         <figure class="about__media" data-reveal>
-          <img
-            src="images/homem_apontando_camera_pordosol.jpg"
-            alt="Alex Macedo, fotógrafo de cabelos longos, aponta para o horizonte com uma câmera na mão em contraluz."
-            width="799"
-            height="529"
-            loading="lazy"
-            decoding="async"
-          >
+          <picture>
+            <source srcset="images/homem_apontando_camera_pordosol.webp" type="image/webp">
+            <img
+              src="images/homem_apontando_camera_pordosol.jpg"
+              alt="Alex Macedo, fotógrafo de cabelos longos, aponta para o horizonte com uma câmera na mão em contraluz."
+              width="799"
+              height="529"
+              loading="lazy"
+              decoding="async"
+            >
+          </picture>
           <figcaption>Alex Macedo · fotógrafo documentarista</figcaption>
         </figure>
 
@@ -182,8 +200,11 @@
           <p class="daltonismo__signature">— Alex Macedo</p>
         </div>
         <figure class="daltonismo__media" data-reveal>
-          <img src="images/quebra_panela.jpeg" alt="Cena da festividade do quebra-panela na feira livre, em preto e branco, exemplo de como o contraste guia a construção do olhar." width="1600" height="1066" loading="lazy" decoding="async">
-          <figcaption>Fotografia em preto e branco · Feira Livre de Parelhas</figcaption>
+          <picture>
+            <source srcset="images/quebra_panela.avif" type="image/avif">
+            <source srcset="images/quebra_panela.webp" type="image/webp">
+            <img src="images/quebra_panela.jpeg" alt="Cena da festividade do quebra-panela na feira livre, em preto e branco, exemplo de como o contraste guia a construção do olhar." width="1600" height="1066" loading="lazy" decoding="async">
+          </picture>
         </figure>
       </div>
     </section>
@@ -198,25 +219,32 @@
         </div>
         <div class="natgeo__grid">
           <figure class="natgeo__item" data-reveal>
-            <img
-              src="images/menina_no_celular_national_geograph.png"
-              alt="A fotografia premiada pela National Geographic em 2015, da série Vidas Cinzas."
-              width="1500"
-              height="1000"
-              loading="lazy"
-              decoding="async"
-            >
+            <picture>
+              <source srcset="images/menina_no_celular_national_geograph.avif" type="image/avif">
+              <source srcset="images/menina_no_celular_national_geograph.webp" type="image/webp">
+              <img
+                src="images/menina_no_celular_national_geograph.png"
+                alt="A fotografia premiada pela National Geographic em 2015, da série Vidas Cinzas."
+                width="1500"
+                height="1000"
+                loading="lazy"
+                decoding="async"
+              >
+            </picture>
             <figcaption>A fotografia premiada · Série Vidas Cinzas (2015)</figcaption>
           </figure>
           <figure class="natgeo__item natgeo__item--portrait" data-reveal>
-            <img
-              src="images/trofel-national-geograph.jpeg"
-              alt="Alex Macedo recebendo o troféu do concurso da National Geographic."
-              width="901"
-              height="1280"
-              loading="lazy"
-              decoding="async"
-            >
+            <picture>
+              <source srcset="images/trofel-national-geograph.webp" type="image/webp">
+              <img
+                src="images/trofel-national-geograph.jpeg"
+                alt="Alex Macedo recebendo o troféu do concurso da National Geographic."
+                width="901"
+                height="1280"
+                loading="lazy"
+                decoding="async"
+              >
+            </picture>
           </figure>
         </div>
       </div>
@@ -239,14 +267,18 @@
         <div class="portfolio__grid">
           <figure class="portfolio__item portfolio__item--featured" data-reveal>
             <div class="portfolio__media">
-              <img
-                src="images/menino_no_barco.jpeg"
-                alt="Menino em um barco, registro da série Retratos."
-                width="1166"
-                height="1600"
-                loading="lazy"
-                decoding="async"
-              >
+              <picture>
+                <source srcset="images/menino_no_barco.avif" type="image/avif">
+                <source srcset="images/menino_no_barco.webp" type="image/webp">
+                <img
+                  src="images/menino_no_barco.jpeg"
+                  alt="Menino em um barco, registro da série Retratos."
+                  width="1166"
+                  height="1600"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </picture>
             </div>
             <span class="portfolio__badge">Destaque</span>
             <figcaption class="portfolio__caption">Menino no barco · Série Retratos</figcaption>
@@ -254,84 +286,106 @@
 
           <figure class="portfolio__item portfolio__item--portrait" data-reveal>
             <div class="portfolio__media">
-              <img
-                src="images/pipoqueira_ao_longe.jpeg"
-                alt="Pipoqueiro visto ao longe em uma rua do sertão."
-                width="640"
-                height="960"
-                loading="lazy"
-                decoding="async"
-              >
+              <picture>
+                <source srcset="images/pipoqueira_ao_longe.webp" type="image/webp">
+                <img
+                  src="images/pipoqueira_ao_longe.jpeg"
+                  alt="Pipoqueiro visto ao longe em uma rua do sertão."
+                  width="640"
+                  height="960"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </picture>
             </div>
             <figcaption class="portfolio__caption">Pipoqueira ao longe · Cena de rua</figcaption>
           </figure>
 
           <figure class="portfolio__item portfolio__item--landscape" data-reveal>
             <div class="portfolio__media">
-              <img
-                src="images/vaqueiros-sitios-tibir-pedra-lavrada-PB.jpeg"
-                alt="Vaqueiros reunidos no Sítio Tibiri."
-                width="2048"
-                height="1365"
-                loading="lazy"
-                decoding="async"
-              >
+              <picture>
+                <source srcset="images/vaqueiros-sitios-tibir-pedra-lavrada-PB.avif" type="image/avif">
+                <source srcset="images/vaqueiros-sitios-tibir-pedra-lavrada-PB.webp" type="image/webp">
+                <img
+                  src="images/vaqueiros-sitios-tibir-pedra-lavrada-PB.jpeg"
+                  alt="Vaqueiros reunidos no Sítio Tibiri."
+                  width="2048"
+                  height="1365"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </picture>
             </div>
             <figcaption class="portfolio__caption">Vaqueiros · Sítio Tibiri, PB</figcaption>
           </figure>
 
           <figure class="portfolio__item portfolio__item--landscape" data-reveal>
             <div class="portfolio__media">
-              <img
-                src="images/homem_nu_casa_acabada.jpeg"
-                alt="Estudo do corpo masculino em paisagem natural."
-                width="1600"
-                height="1066"
-                loading="lazy"
-                decoding="async"
-              >
+              <picture>
+                <source srcset="images/homem_nu_casa_acabada.avif" type="image/avif">
+                <source srcset="images/homem_nu_casa_acabada.webp" type="image/webp">
+                <img
+                  src="images/homem_nu_casa_acabada.jpeg"
+                  alt="Estudo do corpo masculino em paisagem natural."
+                  width="1600"
+                  height="1066"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </picture>
             </div>
             <figcaption class="portfolio__caption">Estudo do corpo · Luz natural</figcaption>
           </figure>
 
           <figure class="portfolio__item portfolio__item--landscape" data-reveal>
             <div class="portfolio__media">
-              <img
-                src="images/quebra_panela.jpeg"
-                alt="Cena da festividade do quebra-panela na feira livre."
-                width="1600"
-                height="1066"
-                loading="lazy"
-                decoding="async"
-              >
+              <picture>
+                <source srcset="images/quebra_panela.avif" type="image/avif">
+                <source srcset="images/quebra_panela.webp" type="image/webp">
+                <img
+                  src="images/quebra_panela.jpeg"
+                  alt="Cena da festividade do quebra-panela na feira livre."
+                  width="1600"
+                  height="1066"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </picture>
             </div>
             <figcaption class="portfolio__caption">Quebra-panela · Feira Livre de Parelhas</figcaption>
           </figure>
 
           <figure class="portfolio__item portfolio__item--portrait" data-reveal>
             <div class="portfolio__media">
-              <img
-                src="images/pernas_e_sapatos_idoso.jpg"
-                alt="Detalhe das pernas e sapatos de uma pessoa sentada."
-                width="556"
-                height="799"
-                loading="lazy"
-                decoding="async"
-              >
+              <picture>
+                <source srcset="images/pernas_e_sapatos_idoso.webp" type="image/webp">
+                <img
+                  src="images/pernas_e_sapatos_idoso.jpg"
+                  alt="Detalhe das pernas e sapatos de uma pessoa sentada."
+                  width="556"
+                  height="799"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </picture>
             </div>
             <figcaption class="portfolio__caption">Detalhe · Pernas e sapatos</figcaption>
           </figure>
 
           <figure class="portfolio__item portfolio__item--landscape" data-reveal>
             <div class="portfolio__media">
-              <img
-                src="images/velho_vendendor_de_pipoca.jpeg"
-                alt="Retrato de um velho vendedor de pipoca."
-                width="1600"
-                height="1066"
-                loading="lazy"
-                decoding="async"
-              >
+              <picture>
+                <source srcset="images/velho_vendendor_de_pipoca.avif" type="image/avif">
+                <source srcset="images/velho_vendendor_de_pipoca.webp" type="image/webp">
+                <img
+                  src="images/velho_vendendor_de_pipoca.jpeg"
+                  alt="Retrato de um velho vendedor de pipoca."
+                  width="1600"
+                  height="1066"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </picture>
             </div>
             <figcaption class="portfolio__caption">Vendedor de pipoca · Retrato</figcaption>
           </figure>
@@ -430,6 +484,107 @@
               </svg>
             </span>
             <p>Aplicar os fundamentos técnicos da fotografia de maneira simples, prática e criativa.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Módulos -->
+    <section class="section modules" id="modulos" aria-labelledby="modulos-title">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow"><span class="eyebrow__line" aria-hidden="true"></span>Conteúdo do curso</p>
+          <h2 id="modulos-title">Os 11 módulos, do primeiro clique ao olhar autoral.</h2>
+          <p class="section-intro">Uma jornada que começa pela filosofia da fotografia, passa pelos fundamentos técnicos e chega à luz, à composição e ao olhar.</p>
+        </div>
+
+        <div class="modules__grid">
+          <article class="module" data-reveal>
+            <span class="module__number" aria-hidden="true">01</span>
+            <div class="module__body">
+              <h3>Bem-vindo ao Fotografia Além da Imagem</h3>
+              <p>Apresentação do curso e da filosofia que guia todo o aprendizado. Antes de falar sobre câmeras e configurações, entender o que realmente faz uma fotografia ter significado.</p>
+            </div>
+          </article>
+
+          <article class="module" data-reveal>
+            <span class="module__number" aria-hidden="true">02</span>
+            <div class="module__body">
+              <h3>Pilar 1 — O Diafragma e o Controle da Luz</h3>
+              <p>Entender como o diafragma controla a entrada de luz na câmera e influencia a profundidade de campo. Um dos fundamentos mais importantes para criar imagens com intenção e direcionar o olhar do observador.</p>
+            </div>
+          </article>
+
+          <article class="module" data-reveal>
+            <span class="module__number" aria-hidden="true">03</span>
+            <div class="module__body">
+              <h3>Pilar 2 — O Obturador e o Controle do Movimento</h3>
+              <p>Aprender como a velocidade do obturador afeta as fotografias e descobrir como congelar movimentos ou criar efeitos criativos através do controle do tempo de exposição.</p>
+            </div>
+          </article>
+
+          <article class="module" data-reveal>
+            <span class="module__number" aria-hidden="true">04</span>
+            <div class="module__body">
+              <h3>Pilar 3 — ISO e a Sensibilidade à Luz</h3>
+              <p>Compreender como o ISO afeta a sensibilidade do sensor à luz e como utilizá-lo corretamente em diferentes condições de iluminação. Equilibrar exposição e qualidade de imagem.</p>
+            </div>
+          </article>
+
+          <article class="module" data-reveal>
+            <span class="module__number" aria-hidden="true">05</span>
+            <div class="module__body">
+              <h3>Controlando a Câmera, Libertando o Olhar</h3>
+              <p>Utilizar diafragma, obturador e ISO em conjunto. Quando os três pilares trabalham em harmonia, a câmera deixa de ser uma barreira e passa a ser uma extensão do olhar.</p>
+            </div>
+          </article>
+
+          <article class="module" data-reveal>
+            <span class="module__number" aria-hidden="true">06</span>
+            <div class="module__body">
+              <h3>Pilar 4 — A Arte de Compor e Enquadrar</h3>
+              <p>Aprender como enquadramento e composição trabalham juntos para transformar cenas comuns em fotografias mais fortes e interessantes.</p>
+            </div>
+          </article>
+
+          <article class="module" data-reveal>
+            <span class="module__number" aria-hidden="true">07</span>
+            <div class="module__body">
+              <h3>Pilar 5 — Aprendendo a Enxergar a Luz</h3>
+              <p>A luz é um dos elementos mais importantes da fotografia. Observar diferentes tipos de luz e compreender como influenciam a atmosfera, as emoções e a forma como uma imagem é percebida.</p>
+            </div>
+          </article>
+
+          <article class="module" data-reveal>
+            <span class="module__number" aria-hidden="true">08</span>
+            <div class="module__body">
+              <h3>A Medida da Luz</h3>
+              <p>Compreender como a luz se comporta e utilizar o fotômetro para medir a luz da cena.</p>
+            </div>
+          </article>
+
+          <article class="module" data-reveal>
+            <span class="module__number" aria-hidden="true">09</span>
+            <div class="module__body">
+              <h3>Enxergando o Mundo Através das Lentes</h3>
+              <p>Cada lente revela o mundo de uma maneira diferente. Aprender como as diferentes distâncias focais influenciam a perspectiva, o enquadramento e a sensação transmitida pela fotografia.</p>
+            </div>
+          </article>
+
+          <article class="module" data-reveal>
+            <span class="module__number" aria-hidden="true">10</span>
+            <div class="module__body">
+              <h3>Módulo Extra — Pequenos Detalhes, Grandes Fotografias</h3>
+              <p>Dicas práticas e orientações: cuidados com a câmera, maneiras de evitar erros comuns e pequenas ações que podem fazer grande diferença nas fotografias.</p>
+            </div>
+          </article>
+
+          <article class="module" data-reveal>
+            <span class="module__number" aria-hidden="true">11</span>
+            <div class="module__body">
+              <h3>E-book Fotografando com a Luz do Sol</h3>
+              <p>Material complementar sobre fotografia com luz solar.</p>
+            </div>
           </article>
         </div>
       </div>
@@ -609,3 +764,4 @@
   </script>
 </body>
 </html>
+
