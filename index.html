@@ -9,7 +9,7 @@
   <meta name="author" content="Alex Macedo">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#0a0a0a">
-  <link rel="canonical" href="https://fotografiaalemdaimagem.com/">
+  <link rel="canonical" href="https://andersonmorize.github.io/chess/">
 
   <!-- Open Graph / redes sociais -->
   <meta property="og:type" content="website">
@@ -17,19 +17,20 @@
   <meta property="og:site_name" content="Fotografia Além da Imagem">
   <meta property="og:title" content="Fotografia Além da Imagem | Curso online com Alex Macedo">
   <meta property="og:description" content="Desenvolva o olhar fotográfico e crie imagens com intenção, identidade e significado — mesmo com equipamentos simples.">
-  <meta property="og:url" content="https://fotografiaalemdaimagem.com/">
-  <meta property="og:image" content="https://fotografiaalemdaimagem.com/images/og-image.jpg">
+  <meta property="og:url" content="https://andersonmorize.github.io/chess/">
+  <meta property="og:image" content="https://andersonmorize.github.io/chess/images/responsive/og-image-1200w.jpg">
   <meta property="og:image:type" content="image/jpeg">
-  <meta property="og:image:secure_url" content="https://fotografiaalemdaimagem.com/images/og-image.jpg">
+  <meta property="og:image:secure_url" content="https://andersonmorize.github.io/chess/images/responsive/og-image-1200w.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Silhueta de um fotógrafo caminhando em um campo de capim alto ao entardecer.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Fotografia Além da Imagem | Curso online com Alex Macedo">
   <meta name="twitter:description" content="Desenvolva o olhar fotográfico e crie imagens com intenção, identidade e significado — mesmo com equipamentos simples.">
-  <meta name="twitter:image" content="https://fotografiaalemdaimagem.com/images/og-image.jpg">
+  <meta name="twitter:image" content="https://andersonmorize.github.io/chess/images/responsive/og-image-1200w.jpg">
   <meta name="twitter:image:alt" content="Silhueta de um fotógrafo caminhando em um campo de capim alto ao entardecer.">
 
+  <!-- Favicon: deve existir na raiz publicada (/chess/favicon.svg) -->
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,30 +42,24 @@
   >
 
   <!--
-    Tarefa 4 — Preload do hero com imagesrcset/imagesizes.
-    AVIF primeiro (primeira <source> do <picture>); WebP como segunda opção.
-    O JPEG virou fallback e NÃO é mais pré-carregado.
+    Preload do hero — usa caminhos/nomes REAIS das variantes em images/responsive/.
+    AVIF primeiro (primeira <source>), WebP como segunda opção. JPEG não é pré-carregado.
   -->
   <link rel="preload" as="image"
-        href="images/hero-1200.avif"
-        imagesrcset="images/hero-768.avif 768w, images/hero-1200.avif 1200w, images/hero-1600.avif 1600w"
+        href="images/responsive/hero-alta-qualidade-1200w.avif"
+        imagesrcset="images/responsive/hero-alta-qualidade-768w.avif 768w, images/responsive/hero-alta-qualidade-1200w.avif 1200w, images/responsive/hero-alta-qualidade-1600w.avif 1600w"
         imagesizes="100vw"
         type="image/avif"
         fetchpriority="high">
   <link rel="preload" as="image"
-        href="images/hero-1200.webp"
-        imagesrcset="images/hero-768.webp 768w, images/hero-1200.webp 1200w, images/hero-1600.webp 1600w"
+        href="images/responsive/hero-alta-qualidade-1200w.webp"
+        imagesrcset="images/responsive/hero-alta-qualidade-768w.webp 768w, images/responsive/hero-alta-qualidade-1200w.webp 1200w, images/responsive/hero-alta-qualidade-1600w.webp 1600w"
         imagesizes="100vw"
         type="image/webp"
         fetchpriority="high">
 
-  <!--
-    CSS CRÍTICO INLINE:
-    Contém apenas o necessário para o primeiro paint (hero, header, tipografia base,
-    botões). O restante de style.css é carregado de forma não-bloqueante abaixo.
-  -->
+  <!-- CSS crítico inline (subset: reset, tokens, hero, botões) -->
   <style>
-    /* ---------- Reset mínimo ---------- */
     *,*::before,*::after{box-sizing:border-box}
     html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     body{margin:0}
@@ -73,7 +68,6 @@
     button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
     a{color:inherit;text-decoration:none}
 
-    /* ---------- Tokens (subset crítico) ---------- */
     :root{
       --bg:#0a0a0a;
       --fg:#f5f2ec;
@@ -96,7 +90,6 @@
       text-rendering:optimizeLegibility;
     }
 
-    /* ---------- Container ---------- */
     .container{
       width:100%;
       max-width:var(--container-max);
@@ -104,7 +97,6 @@
       padding-inline:var(--gutter);
     }
 
-    /* ---------- Skip link ---------- */
     .skip-link{
       position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;
     }
@@ -113,7 +105,6 @@
       background:var(--accent);color:#111;border-radius:.4rem;z-index:9999;
     }
 
-    /* ---------- Tipografia base ---------- */
     h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.1;margin:0 0 .4em}
     h1{font-size:clamp(2.6rem,7vw,5.2rem);letter-spacing:-.01em}
     h2{font-size:clamp(1.8rem,4vw,2.8rem)}
@@ -128,7 +119,6 @@
     }
     .eyebrow__line{display:inline-block;width:2.5rem;height:1px;background:currentColor;opacity:.7}
 
-    /* ---------- Botões (crítico: aparece no hero) ---------- */
     .btn{
       display:inline-flex;align-items:center;justify-content:center;
       gap:.5rem;padding:.95rem 1.6rem;border-radius:999px;
@@ -144,7 +134,6 @@
     .btn--primary:hover{background:var(--accent-strong);transform:translateY(-1px)}
     .btn--large{padding:1.1rem 2rem;font-size:1rem}
 
-    /* ---------- HERO (LCP candidate) ---------- */
     .hero{
       position:relative;
       min-height:100svh;
@@ -191,34 +180,25 @@
       50%{transform:rotate(45deg) translate(.2rem,.2rem);opacity:1}
     }
 
-    /* ---------- Reduced motion ---------- */
     @media (prefers-reduced-motion: reduce){
       *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
       .hero__scroll span{animation:none}
     }
   </style>
 
-  <link
-    rel="stylesheet"
-    href="style.css"
-    media="print"
-    onload="this.media='all'"
-  >
-  <noscript>
-    <link rel="stylesheet" href="style.css">
-  </noscript>
+  <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="style.css"></noscript>
 
   <script>document.documentElement.classList.add('js');</script>
 
-  <!-- Dados estruturados do curso -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "Course",
     "name": "Fotografia Além da Imagem",
     "description": "Desenvolva o olhar fotográfico e crie imagens com intenção, identidade e significado — mesmo com equipamentos simples.",
-    "url": "https://fotografiaalemdaimagem.com/",
-    "image": "https://fotografiaalemdaimagem.com/images/og-image.jpg",
+    "url": "https://andersonmorize.github.io/chess/",
+    "image": "https://andersonmorize.github.io/chess/images/responsive/og-image-1200w.jpg",
     "inLanguage": "pt-BR",
     "courseMode": "online",
     "author": {
@@ -250,18 +230,18 @@
 <body>
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
 
-  <!-- Hero -->
+  <!-- HERO — variantes reais: hero-alta-qualidade-{768,1200,1600}w -->
   <header class="hero" id="inicio">
     <picture>
       <source type="image/avif"
-              srcset="images/hero-768.avif 768w, images/hero-1200.avif 1200w, images/hero-1600.avif 1600w"
+              srcset="images/responsive/hero-alta-qualidade-768w.avif 768w, images/responsive/hero-alta-qualidade-1200w.avif 1200w, images/responsive/hero-alta-qualidade-1600w.avif 1600w"
               sizes="100vw">
       <source type="image/webp"
-              srcset="images/hero-768.webp 768w, images/hero-1200.webp 1200w, images/hero-1600.webp 1600w"
+              srcset="images/responsive/hero-alta-qualidade-768w.webp 768w, images/responsive/hero-alta-qualidade-1200w.webp 1200w, images/responsive/hero-alta-qualidade-1600w.webp 1600w"
               sizes="100vw">
       <img
         class="hero__media"
-        src="images/hero-1600.jpeg"
+        src="images/responsive/hero-alta-qualidade-1600w.jpg"
         alt="Silhueta de um fotógrafo caminhando em um campo de capim alto ao entardecer."
         width="1600" height="1642"
         fetchpriority="high"
@@ -289,25 +269,19 @@
   </header>
 
   <main id="conteudo" tabindex="-1">
-    <!-- Vídeo de vendas — com facade (iframe só no clique) -->
+    <!-- Vídeo de vendas — facade -->
     <section class="section video-sales" id="video" aria-labelledby="video-title">
       <div class="container video-sales__inner" data-reveal>
         <p class="eyebrow"><span class="eyebrow__line" aria-hidden="true"></span>Conheça o curso</p>
         <h2 id="video-title">Uma amostra do que você vai encontrar.</h2>
 
         <div class="video-sales__embed" data-video-facade data-video-id="MlR1fPLTnyA">
-          <button
-            type="button"
-            class="video-sales__play"
-            aria-label="Reproduzir vídeo de apresentação do curso"
-          >
+          <button type="button" class="video-sales__play" aria-label="Reproduzir vídeo de apresentação do curso">
             <img
               src="https://i.ytimg.com/vi/MlR1fPLTnyA/maxresdefault.jpg"
               alt=""
-              width="1280"
-              height="720"
-              loading="lazy"
-              decoding="async"
+              width="1280" height="720"
+              loading="lazy" decoding="async"
               onerror="this.src='https://i.ytimg.com/vi/MlR1fPLTnyA/hqdefault.jpg'"
             >
             <span class="video-sales__play-icon" aria-hidden="true">
@@ -325,19 +299,21 @@
       </div>
     </section>
 
-    <!-- Autor -->
+    <!-- Autor — variantes reais: homem_apontando_camera_pordosol-480w (só existe 480) -->
     <section class="section about" id="autor" aria-label="Sobre o autor">
       <div class="container about__grid">
         <figure class="about__media" data-reveal>
           <picture>
+            <source type="image/avif"
+                    srcset="images/responsive/homem_apontando_camera_pordosol-480w.avif 480w"
+                    sizes="(max-width: 767px) 100vw, 54vw">
             <source type="image/webp"
-                    srcset="images/homem-apontando-480.webp 480w, images/homem-apontando-799.webp 799w"
+                    srcset="images/responsive/homem_apontando_camera_pordosol-480w.webp 480w"
                     sizes="(max-width: 767px) 100vw, 54vw">
             <img
-              src="images/homem_apontando_camera_pordosol.jpg"
+              src="images/responsive/homem_apontando_camera_pordosol-480w.jpg"
               alt="Alex Macedo, fotógrafo de cabelos longos, aponta para o horizonte com uma câmera na mão em contraluz."
-              width="799"
-              height="529"
+              width="480" height="318"
               loading="lazy"
               decoding="async"
             >
@@ -350,24 +326,15 @@
           <p>Alex Macedo é fotógrafo documentarista e produtor audiovisual, com mais de 10 anos de experiência. Seu trabalho já recebeu reconhecimento internacional, incluindo premiação pela <strong>National Geographic</strong>. Através do curso, compartilha não apenas técnica, mas a forma de observar, perceber a luz e encontrar significado nas cenas mais simples do dia a dia.</p>
 
           <ul class="about__facts">
-            <li>
-              <strong>10+</strong>
-              <span>anos de experiência</span>
-            </li>
-            <li>
-              <strong>Documental</strong>
-              <span>fotografia e audiovisual</span>
-            </li>
-            <li>
-              <strong>National Geographic</strong>
-              <span>reconhecimento internacional</span>
-            </li>
+            <li><strong>10+</strong><span>anos de experiência</span></li>
+            <li><strong>Documental</strong><span>fotografia e audiovisual</span></li>
+            <li><strong>National Geographic</strong><span>reconhecimento internacional</span></li>
           </ul>
         </div>
       </div>
     </section>
 
-    <!-- Daltonismo -->
+    <!-- Daltonismo — variantes reais: quebra_panela-{480,800,1200}w -->
     <section class="section daltonismo" id="daltonismo" aria-labelledby="daltonismo-title">
       <div class="container daltonismo__grid">
         <div class="daltonismo__content" data-reveal>
@@ -381,12 +348,12 @@
         <figure class="daltonismo__media" data-reveal>
           <picture>
             <source type="image/avif"
-                    srcset="images/quebra-panela-480.avif 480w, images/quebra-panela-800.avif 800w, images/quebra-panela-1200.avif 1200w"
+                    srcset="images/responsive/quebra_panela-480w.avif 480w, images/responsive/quebra_panela-800w.avif 800w, images/responsive/quebra_panela-1200w.avif 1200w"
                     sizes="(max-width: 767px) 100vw, 54vw">
             <source type="image/webp"
-                    srcset="images/quebra-panela-480.webp 480w, images/quebra-panela-800.webp 800w, images/quebra-panela-1200.webp 1200w"
+                    srcset="images/responsive/quebra_panela-480w.webp 480w, images/responsive/quebra_panela-800w.webp 800w, images/responsive/quebra_panela-1200w.webp 1200w"
                     sizes="(max-width: 767px) 100vw, 54vw">
-            <img src="images/quebra-panela-1200.jpeg"
+            <img src="images/responsive/quebra_panela-1200w.jpg"
                  alt="Cena da festividade do quebra-panela na feira livre, em preto e branco, exemplo de como o contraste guia a construção do olhar."
                  width="1200" height="800" loading="lazy" decoding="async">
           </picture>
@@ -394,7 +361,9 @@
       </div>
     </section>
 
-    <!-- National Geographic -->
+    <!-- National Geographic — variantes reais:
+         menina_no_celular_national_geograph-{600,900,1200}w
+         trofel-national-geograph-{450,675,900}w -->
     <section class="section natgeo" id="natgeo" aria-labelledby="natgeo-title">
       <div class="container">
         <div class="section-head" data-reveal>
@@ -406,16 +375,15 @@
           <figure class="natgeo__item" data-reveal>
             <picture>
               <source type="image/avif"
-                      srcset="images/menina-celular-600.avif 600w, images/menina-celular-900.avif 900w, images/menina-celular-1200.avif 1200w, images/menina-celular-1600.avif 1600w"
+                      srcset="images/responsive/menina_no_celular_national_geograph-600w.avif 600w, images/responsive/menina_no_celular_national_geograph-900w.avif 900w, images/responsive/menina_no_celular_national_geograph-1200w.avif 1200w"
                       sizes="(max-width: 767px) 100vw, 63vw">
               <source type="image/webp"
-                      srcset="images/menina-celular-600.webp 600w, images/menina-celular-900.webp 900w, images/menina-celular-1200.webp 1200w, images/menina-celular-1600.webp 1600w"
+                      srcset="images/responsive/menina_no_celular_national_geograph-600w.webp 600w, images/responsive/menina_no_celular_national_geograph-900w.webp 900w, images/responsive/menina_no_celular_national_geograph-1200w.webp 1200w"
                       sizes="(max-width: 767px) 100vw, 63vw">
               <img
-                src="images/menina_no_celular_national_geograph.png"
+                src="images/responsive/menina_no_celular_national_geograph-1200w.png"
                 alt="A fotografia premiada pela National Geographic em 2015, da série Vidas Cinzas."
-                width="1500"
-                height="1000"
+                width="1200" height="800"
                 loading="lazy"
                 decoding="async"
               >
@@ -424,14 +392,16 @@
           </figure>
           <figure class="natgeo__item natgeo__item--portrait" data-reveal>
             <picture>
+              <source type="image/avif"
+                      srcset="images/responsive/trofel-national-geograph-450w.avif 450w, images/responsive/trofel-national-geograph-675w.avif 675w, images/responsive/trofel-national-geograph-900w.avif 900w"
+                      sizes="(max-width: 767px) 420px, 32vw">
               <source type="image/webp"
-                      srcset="images/trofeu-400.webp 400w, images/trofeu-600.webp 600w, images/trofeu-900.webp 900w"
+                      srcset="images/responsive/trofel-national-geograph-450w.webp 450w, images/responsive/trofel-national-geograph-675w.webp 675w, images/responsive/trofel-national-geograph-900w.webp 900w"
                       sizes="(max-width: 767px) 420px, 32vw">
               <img
-                src="images/trofel-national-geograph.jpeg"
+                src="images/responsive/trofel-national-geograph-900w.jpg"
                 alt="Alex Macedo recebendo o troféu do concurso da National Geographic."
-                width="901"
-                height="1280"
+                width="900" height="1278"
                 loading="lazy"
                 decoding="async"
               >
@@ -456,21 +426,20 @@
         </div>
 
         <div class="portfolio__grid">
-          <!-- Featured: 2 cols (span 2×2) em ≥768px; primeiro item → loading="eager" -->
+          <!-- Featured: variantes reais 480, 800 (não há 1600) -->
           <figure class="portfolio__item portfolio__item--featured" data-reveal>
             <div class="portfolio__media">
               <picture>
                 <source type="image/avif"
-                        srcset="images/menino-no-barco-400.avif 400w, images/menino-no-barco-600.avif 600w, images/menino-no-barco-800.avif 800w, images/menino-no-barco-1600.avif 1600w"
+                        srcset="images/responsive/menino_no_barco-480w.avif 480w, images/responsive/menino_no_barco-800w.avif 800w"
                         sizes="(max-width: 767px) 100vw, 66vw">
                 <source type="image/webp"
-                        srcset="images/menino-no-barco-400.webp 400w, images/menino-no-barco-600.webp 600w, images/menino-no-barco-800.webp 800w, images/menino-no-barco-1600.webp 1600w"
+                        srcset="images/responsive/menino_no_barco-480w.webp 480w, images/responsive/menino_no_barco-800w.webp 800w"
                         sizes="(max-width: 767px) 100vw, 66vw">
                 <img
-                  src="images/menino-no-barco-1600.jpeg"
+                  src="images/responsive/menino_no_barco-800w.jpg"
                   alt="Menino em um barco, registro da série Retratos."
-                  width="1166"
-                  height="1600"
+                  width="800" height="1098"
                   loading="eager"
                   decoding="async"
                 >
@@ -480,17 +449,20 @@
             <figcaption class="portfolio__caption">Menino no barco · Série Retratos</figcaption>
           </figure>
 
+          <!-- Pipoqueira: variantes reais 400, 600 (não há 640) -->
           <figure class="portfolio__item portfolio__item--portrait" data-reveal>
             <div class="portfolio__media">
               <picture>
+                <source type="image/avif"
+                        srcset="images/responsive/pipoqueira_ao_longe-400w.avif 400w, images/responsive/pipoqueira_ao_longe-600w.avif 600w"
+                        sizes="(max-width: 767px) 100vw, 33vw">
                 <source type="image/webp"
-                        srcset="images/pipoqueira-400.webp 400w, images/pipoqueira-600.webp 600w, images/pipoqueira-640.webp 640w"
+                        srcset="images/responsive/pipoqueira_ao_longe-400w.webp 400w, images/responsive/pipoqueira_ao_longe-600w.webp 600w"
                         sizes="(max-width: 767px) 100vw, 33vw">
                 <img
-                  src="images/pipoqueira_ao_longe.jpeg"
+                  src="images/responsive/pipoqueira_ao_longe-600w.jpg"
                   alt="Pipoqueiro visto ao longe em uma rua do sertão."
-                  width="640"
-                  height="960"
+                  width="600" height="900"
                   loading="lazy"
                   decoding="async"
                 >
@@ -503,16 +475,15 @@
             <div class="portfolio__media">
               <picture>
                 <source type="image/avif"
-                        srcset="images/vaqueiros-480.avif 480w, images/vaqueiros-800.avif 800w, images/vaqueiros-1200.avif 1200w"
+                        srcset="images/responsive/vaqueiros-sitios-tibir-pedra-lavrada-PB-480w.avif 480w, images/responsive/vaqueiros-sitios-tibir-pedra-lavrada-PB-800w.avif 800w, images/responsive/vaqueiros-sitios-tibir-pedra-lavrada-PB-1200w.avif 1200w"
                         sizes="(max-width: 767px) 100vw, 33vw">
                 <source type="image/webp"
-                        srcset="images/vaqueiros-480.webp 480w, images/vaqueiros-800.webp 800w, images/vaqueiros-1200.webp 1200w"
+                        srcset="images/responsive/vaqueiros-sitios-tibir-pedra-lavrada-PB-480w.webp 480w, images/responsive/vaqueiros-sitios-tibir-pedra-lavrada-PB-800w.webp 800w, images/responsive/vaqueiros-sitios-tibir-pedra-lavrada-PB-1200w.webp 1200w"
                         sizes="(max-width: 767px) 100vw, 33vw">
                 <img
-                  src="images/vaqueiros-1200.jpeg"
+                  src="images/responsive/vaqueiros-sitios-tibir-pedra-lavrada-PB-1200w.jpg"
                   alt="Vaqueiros reunidos no Sítio Tibiri."
-                  width="1200"
-                  height="800"
+                  width="1200" height="800"
                   loading="lazy"
                   decoding="async"
                 >
@@ -525,16 +496,15 @@
             <div class="portfolio__media">
               <picture>
                 <source type="image/avif"
-                        srcset="images/homem-nu-casa-480.avif 480w, images/homem-nu-casa-800.avif 800w, images/homem-nu-casa-1200.avif 1200w"
+                        srcset="images/responsive/homem_nu_casa_acabada-480w.avif 480w, images/responsive/homem_nu_casa_acabada-800w.avif 800w, images/responsive/homem_nu_casa_acabada-1200w.avif 1200w"
                         sizes="(max-width: 767px) 100vw, 33vw">
                 <source type="image/webp"
-                        srcset="images/homem-nu-casa-480.webp 480w, images/homem-nu-casa-800.webp 800w, images/homem-nu-casa-1200.webp 1200w"
+                        srcset="images/responsive/homem_nu_casa_acabada-480w.webp 480w, images/responsive/homem_nu_casa_acabada-800w.webp 800w, images/responsive/homem_nu_casa_acabada-1200w.webp 1200w"
                         sizes="(max-width: 767px) 100vw, 33vw">
                 <img
-                  src="images/homem-nu-casa-1200.jpeg"
+                  src="images/responsive/homem_nu_casa_acabada-1200w.jpg"
                   alt="Estudo do corpo masculino em paisagem natural."
-                  width="1200"
-                  height="800"
+                  width="1200" height="800"
                   loading="lazy"
                   decoding="async"
                 >
@@ -547,16 +517,15 @@
             <div class="portfolio__media">
               <picture>
                 <source type="image/avif"
-                        srcset="images/quebra-panela-480.avif 480w, images/quebra-panela-800.avif 800w, images/quebra-panela-1200.avif 1200w"
+                        srcset="images/responsive/quebra_panela-480w.avif 480w, images/responsive/quebra_panela-800w.avif 800w, images/responsive/quebra_panela-1200w.avif 1200w"
                         sizes="(max-width: 767px) 100vw, 33vw">
                 <source type="image/webp"
-                        srcset="images/quebra-panela-480.webp 480w, images/quebra-panela-800.webp 800w, images/quebra-panela-1200.webp 1200w"
+                        srcset="images/responsive/quebra_panela-480w.webp 480w, images/responsive/quebra_panela-800w.webp 800w, images/responsive/quebra_panela-1200w.webp 1200w"
                         sizes="(max-width: 767px) 100vw, 33vw">
                 <img
-                  src="images/quebra-panela-1200.jpeg"
+                  src="images/responsive/quebra_panela-1200w.jpg"
                   alt="Cena da festividade do quebra-panela na feira livre."
-                  width="1200"
-                  height="800"
+                  width="1200" height="800"
                   loading="lazy"
                   decoding="async"
                 >
@@ -565,17 +534,20 @@
             <figcaption class="portfolio__caption">Quebra-panela · Feira Livre de Parelhas</figcaption>
           </figure>
 
+          <!-- Pernas/sapatos: só existe 400w -->
           <figure class="portfolio__item portfolio__item--portrait" data-reveal>
             <div class="portfolio__media">
               <picture>
+                <source type="image/avif"
+                        srcset="images/responsive/pernas_e_sapatos_idoso-400w.avif 400w"
+                        sizes="(max-width: 767px) 100vw, 33vw">
                 <source type="image/webp"
-                        srcset="images/pernas-sapatos-400.webp 400w, images/pernas-sapatos-556.webp 556w"
+                        srcset="images/responsive/pernas_e_sapatos_idoso-400w.webp 400w"
                         sizes="(max-width: 767px) 100vw, 33vw">
                 <img
-                  src="images/pernas_e_sapatos_idoso.jpg"
+                  src="images/responsive/pernas_e_sapatos_idoso-400w.jpg"
                   alt="Detalhe das pernas e sapatos de uma pessoa sentada."
-                  width="556"
-                  height="799"
+                  width="400" height="574"
                   loading="lazy"
                   decoding="async"
                 >
@@ -584,21 +556,20 @@
             <figcaption class="portfolio__caption">Detalhe · Pernas e sapatos</figcaption>
           </figure>
 
-          <!-- Último item: ocupa a linha toda (1/-1) mas limitado a 720px no CSS -->
+          <!-- Último item: ocupa linha toda mas max-width 720px -->
           <figure class="portfolio__item portfolio__item--landscape" data-reveal>
             <div class="portfolio__media">
               <picture>
                 <source type="image/avif"
-                        srcset="images/velho-vendedor-480.avif 480w, images/velho-vendedor-800.avif 800w, images/velho-vendedor-1200.avif 1200w"
+                        srcset="images/responsive/velho_vendendor_de_pipoca-480w.avif 480w, images/responsive/velho_vendendor_de_pipoca-800w.avif 800w, images/responsive/velho_vendendor_de_pipoca-1200w.avif 1200w"
                         sizes="(max-width: 767px) 100vw, 720px">
                 <source type="image/webp"
-                        srcset="images/velho-vendedor-480.webp 480w, images/velho-vendedor-800.webp 800w, images/velho-vendedor-1200.webp 1200w"
+                        srcset="images/responsive/velho_vendendor_de_pipoca-480w.webp 480w, images/responsive/velho_vendendor_de_pipoca-800w.webp 800w, images/responsive/velho_vendendor_de_pipoca-1200w.webp 1200w"
                         sizes="(max-width: 767px) 100vw, 720px">
                 <img
-                  src="images/velho-vendedor-800.jpeg"
+                  src="images/responsive/velho_vendendor_de_pipoca-1200w.jpg"
                   alt="Retrato de um velho vendedor de pipoca."
-                  width="1200"
-                  height="800"
+                  width="1200" height="800"
                   loading="lazy"
                   decoding="async"
                 >
@@ -623,81 +594,47 @@
           <article class="card" data-reveal>
             <span class="card__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                <circle cx="12" cy="12" r="4"/>
-                <path d="M12 2v2"/>
-                <path d="M12 20v2"/>
-                <path d="m4.93 4.93 1.41 1.41"/>
-                <path d="m17.66 17.66 1.41 1.41"/>
-                <path d="M2 12h2"/>
-                <path d="M20 12h2"/>
-                <path d="m6.34 17.66-1.41 1.41"/>
-                <path d="m19.07 4.93-1.41 1.41"/>
+                <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
               </svg>
             </span>
             <p>Perceber a luz e entender como ela transforma completamente uma fotografia.</p>
           </article>
-
           <article class="card" data-reveal>
             <span class="card__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                <path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/>
-                <circle cx="12" cy="12" r="3"/>
+                <path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/>
               </svg>
             </span>
             <p>Desenvolver um olhar mais atento para criar enquadramentos com identidade e significado.</p>
           </article>
-
           <article class="card" data-reveal>
             <span class="card__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="m14.31 8 5.74 9.94"/>
-                <path d="M9.69 8h11.48"/>
-                <path d="m7.38 12 5.74-9.94"/>
-                <path d="M9.69 16 3.95 6.06"/>
-                <path d="M14.31 16H2.83"/>
-                <path d="m16.62 12-5.74 9.94"/>
+                <circle cx="12" cy="12" r="10"/><path d="m14.31 8 5.74 9.94"/><path d="M9.69 8h11.48"/><path d="m7.38 12 5.74-9.94"/><path d="M9.69 16 3.95 6.06"/><path d="M14.31 16H2.83"/><path d="m16.62 12-5.74 9.94"/>
               </svg>
             </span>
             <p>Aprender e utilizar os 5 pilares da fotografia para assumir o controle da sua câmera com confiança.</p>
           </article>
-
           <article class="card" data-reveal>
             <span class="card__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                <rect width="18" height="18" x="3" y="3" rx="2"/>
-                <path d="M3 9h18"/>
-                <path d="M3 15h18"/>
-                <path d="M9 3v18"/>
-                <path d="M15 3v18"/>
+                <rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/>
               </svg>
             </span>
             <p>Criar composições fotográficas com mais intenção, equilíbrio e beleza.</p>
           </article>
-
           <article class="card" data-reveal>
             <span class="card__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                <path d="M12 2v8"/>
-                <path d="m4.93 10.93 1.41 1.41"/>
-                <path d="M2 18h2"/>
-                <path d="M20 18h2"/>
-                <path d="m19.07 10.93-1.41 1.41"/>
-                <path d="M22 22H2"/>
-                <path d="m8 6 4-4 4 4"/>
-                <path d="M16 18a4 4 0 0 0-8 0"/>
+                <path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 6 4-4 4 4"/><path d="M16 18a4 4 0 0 0-8 0"/>
               </svg>
             </span>
             <p>Compreender a relação entre luz, forma e emoção na construção de uma imagem.</p>
           </article>
-
           <article class="card" data-reveal>
             <span class="card__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                <path d="M10 2h4"/>
-                <path d="M12 14v-4"/>
-                <path d="M12 14 15 11"/>
-                <circle cx="12" cy="14" r="8"/>
+                <path d="M10 2h4"/><path d="M12 14v-4"/><path d="M12 14 15 11"/><circle cx="12" cy="14" r="8"/>
               </svg>
             </span>
             <p>Aplicar os fundamentos técnicos da fotografia de maneira simples, prática e criativa.</p>
@@ -723,7 +660,6 @@
               <p>Apresentação do curso e da filosofia que guia todo o aprendizado. Antes de falar sobre câmeras e configurações, entender o que realmente faz uma fotografia ter significado.</p>
             </div>
           </article>
-
           <article class="module" data-reveal>
             <span class="module__number" aria-hidden="true">02</span>
             <div class="module__body">
@@ -731,7 +667,6 @@
               <p>Entender como o diafragma controla a entrada de luz na câmera e influencia a profundidade de campo. Um dos fundamentos mais importantes para criar imagens com intenção e direcionar o olhar do observador.</p>
             </div>
           </article>
-
           <article class="module" data-reveal>
             <span class="module__number" aria-hidden="true">03</span>
             <div class="module__body">
@@ -739,7 +674,6 @@
               <p>Aprender como a velocidade do obturador afeta as fotografias e descobrir como congelar movimentos ou criar efeitos criativos através do controle do tempo de exposição.</p>
             </div>
           </article>
-
           <article class="module" data-reveal>
             <span class="module__number" aria-hidden="true">04</span>
             <div class="module__body">
@@ -747,7 +681,6 @@
               <p>Compreender como o ISO afeta a sensibilidade do sensor à luz e como utilizá-lo corretamente em diferentes condições de iluminação. Equilibrar exposição e qualidade de imagem.</p>
             </div>
           </article>
-
           <article class="module" data-reveal>
             <span class="module__number" aria-hidden="true">05</span>
             <div class="module__body">
@@ -755,7 +688,6 @@
               <p>Utilizar diafragma, obturador e ISO em conjunto. Quando os três pilares trabalham em harmonia, a câmera deixa de ser uma barreira e passa a ser uma extensão do olhar.</p>
             </div>
           </article>
-
           <article class="module" data-reveal>
             <span class="module__number" aria-hidden="true">06</span>
             <div class="module__body">
@@ -763,7 +695,6 @@
               <p>Aprender como enquadramento e composição trabalham juntos para transformar cenas comuns em fotografias mais fortes e interessantes.</p>
             </div>
           </article>
-
           <article class="module" data-reveal>
             <span class="module__number" aria-hidden="true">07</span>
             <div class="module__body">
@@ -771,7 +702,6 @@
               <p>A luz é um dos elementos mais importantes da fotografia. Observar diferentes tipos de luz e compreender como influenciam a atmosfera, as emoções e a forma como uma imagem é percebida.</p>
             </div>
           </article>
-
           <article class="module" data-reveal>
             <span class="module__number" aria-hidden="true">08</span>
             <div class="module__body">
@@ -779,7 +709,6 @@
               <p>Compreender como a luz se comporta e utilizar o fotômetro para medir a luz da cena.</p>
             </div>
           </article>
-
           <article class="module" data-reveal>
             <span class="module__number" aria-hidden="true">09</span>
             <div class="module__body">
@@ -787,7 +716,6 @@
               <p>Cada lente revela o mundo de uma maneira diferente. Aprender como as diferentes distâncias focais influenciam a perspectiva, o enquadramento e a sensação transmitida pela fotografia.</p>
             </div>
           </article>
-
           <article class="module" data-reveal>
             <span class="module__number" aria-hidden="true">10</span>
             <div class="module__body">
@@ -795,7 +723,6 @@
               <p>Dicas práticas e orientações: cuidados com a câmera, maneiras de evitar erros comuns e pequenas ações que podem fazer grande diferença nas fotografias.</p>
             </div>
           </article>
-
           <article class="module" data-reveal>
             <span class="module__number" aria-hidden="true">11</span>
             <div class="module__body">
@@ -815,26 +742,11 @@
           <h2 id="incluso-title">Tudo o que você precisa para começar.</h2>
 
           <ul class="included__list">
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>
-              11 módulos em vídeo
-            </li>
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>
-              1 hora de conteúdo
-            </li>
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>
-              Certificado digital
-            </li>
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>
-              Garantia incondicional de 7 dias
-            </li>
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>
-              Acesso vitalício
-            </li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>11 módulos em vídeo</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>1 hora de conteúdo</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>Certificado digital</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>Garantia incondicional de 7 dias</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>Acesso vitalício</li>
           </ul>
 
           <a class="text-link" href="#investimento">Conheça o investimento</a>
@@ -900,28 +812,24 @@
     </section>
   </main>
 
-  <!-- Rodapé -->
   <footer class="footer" id="contato">
     <div class="container footer__grid">
       <div class="footer__brand">
         <p class="footer__logo">Fotografia<br><em>Além da Imagem</em></p>
         <p class="footer__tagline">Técnica, luz e olhar para contar histórias que o automático não vê.</p>
       </div>
-
       <div class="footer__contact">
         <p class="footer__label">Contato</p>
         <a href="mailto:alexmacedo.contato@gmail.com">alexmacedo.contato@gmail.com</a>
         <a href="tel:+5584998592636">(84)&nbsp;99859&#8209;2636</a>
         <a href="https://www.instagram.com/alexmacedofotografia/" target="_blank" rel="noopener noreferrer">@alexmacedofotografia</a>
       </div>
-
       <div class="footer__meta">
         <p class="footer__label">Curso online</p>
         <p>11 módulos · 1h de vídeo<br>Acesso vitalício</p>
         <a class="footer__cta" href="https://pay.hotmart.com/S55585420V?off=jcdc63k7" target="_blank" rel="noopener noreferrer">Quero me inscrever</a>
       </div>
     </div>
-
     <div class="container footer__bottom">
       <p>© <span id="ano-atual">2026</span> Alex Macedo. Todos os direitos reservados.</p>
       <div class="footer__legal">
@@ -940,7 +848,6 @@
       const yearElement = document.getElementById('ano-atual');
       if (yearElement) yearElement.textContent = new Date().getFullYear();
 
-      /* ---------- Reveal on scroll ---------- */
       if (!('IntersectionObserver' in window) || reduceMotion) {
         revealAll();
       } else {
@@ -954,12 +861,9 @@
             });
           }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
           revealElements.forEach((el) => observer.observe(el));
-        } catch {
-          revealAll();
-        }
+        } catch { revealAll(); }
       }
 
-      /* ---------- FAQ fallback ---------- */
       const faqDetails = Array.from(document.querySelectorAll('.faq details'));
       if (faqDetails.length > 0 && !('name' in document.createElement('details'))) {
         faqDetails.forEach((detail) => {
@@ -970,7 +874,6 @@
         });
       }
 
-      /* ---------- FACADE DO YOUTUBE ---------- */
       document.querySelectorAll('[data-video-facade]').forEach((facade) => {
         const btn = facade.querySelector('.video-sales__play');
         if (!btn) return;
@@ -988,7 +891,6 @@
         }, { once: true });
       });
 
-      /* ---------- DIAGNÓSTICO DE LCP (opcional) ---------- */
       if (new URLSearchParams(location.search).get('debug') === 'lcp') {
         try {
           new PerformanceObserver((list) => {
