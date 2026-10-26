@@ -1,1177 +1,611 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Passeio do Cavalo - Heurística de Warnsdorff</title>
-    <style>
-        :root {
-            --bg: #1a1a2e;
-            --panel: #16213e;
-            --panel-light: #1f2d4d;
-            --text: #e0e0e0;
-            --text-muted: #aaa;
-            --accent: #e94560;
-            --accent2: #4ecdc4;
-            --success: #2ecc71;
-            --warning: #f39c12;
-            --light-square: #f0d9b5;
-            --dark-square: #b58863;
-            --current-border: #3498db;
-            --possible-border: #2ecc71;
-            --priority-color: #ff6b6b;
-            --visited-start: #4ecdc4;
-            --visited-end: #e94560;
-        }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Fotografia Além da Imagem | Curso online com Alex Macedo</title>
+  <meta name="description" content="Desenvolva o olhar fotográfico e crie imagens com intenção, identidade e significado — mesmo com equipamentos simples. Curso online com Alex Macedo.">
+  <meta name="author" content="Alex Macedo">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="canonical" href="https://fotografiaalemdaimagem.com/">
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <!-- Open Graph / redes sociais -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:site_name" content="Fotografia Além da Imagem">
+  <meta property="og:title" content="Fotografia Além da Imagem | Curso online com Alex Macedo">
+  <meta property="og:description" content="Desenvolva o olhar fotográfico e crie imagens com intenção, identidade e significado — mesmo com equipamentos simples.">
+  <meta property="og:url" content="https://fotografiaalemdaimagem.com/">
+  <meta property="og:image" content="https://fotografiaalemdaimagem.com/images/og-image.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:secure_url" content="https://fotografiaalemdaimagem.com/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Silhueta de um fotógrafo caminhando em um campo de capim alto ao entardecer.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Fotografia Além da Imagem | Curso online com Alex Macedo">
+  <meta name="twitter:description" content="Desenvolva o olhar fotográfico e crie imagens com intenção, identidade e significado — mesmo com equipamentos simples.">
+  <meta name="twitter:image" content="https://fotografiaalemdaimagem.com/images/og-image.jpg">
+  <meta name="twitter:image:alt" content="Silhueta de um fotógrafo caminhando em um campo de capim alto ao entardecer.">
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            background-image:
-                radial-gradient(ellipse at 20% 50%, rgba(233, 69, 96, 0.08) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 50%, rgba(78, 205, 196, 0.08) 0%, transparent 60%);
-        }
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://pay.hotmart.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="images/hero-alta-qualidade.jpeg" fetchpriority="high">
+  <link rel="stylesheet" href="style.css">
 
-        .container {
-            max-width: 1200px;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            align-items: start;
-            background: var(--panel);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
-        }
+  <script>document.documentElement.classList.add('js');</script>
 
-        @media (max-width: 900px) {
-            .container {
-                grid-template-columns: 1fr;
-                padding: 20px;
-            }
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #4ecdc4, #e94560);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.5px;
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 1rem;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-
-        .subtitle strong {
-            color: var(--accent2);
-        }
-
-        .board-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .board-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 520px;
-            aspect-ratio: 1;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 0 3px rgba(255, 255, 255, 0.08);
-            background: #333;
-        }
-
-        .board {
-            display: grid;
-            width: 100%;
-            height: 100%;
-            gap: 0;
-            cursor: pointer;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .cell {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-            font-weight: 600;
-            position: relative;
-            transition: background-color 0.15s, box-shadow 0.15s, transform 0.1s;
-            cursor: pointer;
-            aspect-ratio: 1;
-            color: #222;
-            font-family: 'Courier New', monospace;
-            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
-        }
-
-        .cell.light {
-            background-color: var(--light-square);
-        }
-        .cell.dark {
-            background-color: var(--dark-square);
-        }
-
-        .cell.visited {
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-            color: #fff;
-            font-weight: 700;
-        }
-
-        .cell.current {
-            box-shadow: inset 0 0 0 4px var(--current-border), 0 0 25px rgba(52, 152, 219, 0.7);
-            z-index: 2;
-            animation: pulse-current 1.5s ease-in-out infinite;
-        }
-
-        .cell.possible {
-            box-shadow: inset 0 0 0 3px var(--possible-border);
-            cursor: pointer;
-            z-index: 1;
-            animation: pulse-possible 1.8s ease-in-out infinite;
-        }
-
-        .cell.possible:hover {
-            box-shadow: inset 0 0 0 4px var(--possible-border), 0 0 20px rgba(46, 204, 113, 0.6);
-            transform: scale(0.96);
-        }
-
-        .cell .move-number {
-            font-size: 1.1rem;
-            font-weight: 700;
-            pointer-events: none;
-        }
-
-        .cell .priority-number {
-            position: absolute;
-            top: 2px;
-            right: 4px;
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: var(--priority-color);
-            background: rgba(255, 255, 255, 0.85);
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        .cell .knight-icon {
-            font-size: 2rem;
-            pointer-events: none;
-            line-height: 1;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
-        }
-
-        .cell.visited.start-cell {
-            background-color: var(--visited-start) !important;
-        }
-
-        @keyframes pulse-current {
-            0%,
-            100% {
-                box-shadow: inset 0 0 0 4px var(--current-border), 0 0 25px rgba(52, 152, 219, 0.7);
-            }
-            50% {
-                box-shadow: inset 0 0 0 4px var(--current-border), 0 0 40px rgba(52, 152, 219, 1);
-            }
-        }
-
-        @keyframes pulse-possible {
-            0%,
-            100% {
-                box-shadow: inset 0 0 0 3px var(--possible-border);
-            }
-            50% {
-                box-shadow: inset 0 0 0 3px var(--possible-border), 0 0 20px rgba(46, 204, 113, 0.5);
-            }
-        }
-
-        .controls-section {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        .control-group {
-            background: var(--panel-light);
-            border-radius: 14px;
-            padding: 18px 20px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .control-group h3 {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .control-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .btn {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            letter-spacing: 0.3px;
-            font-family: inherit;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-        .btn:active {
-            transform: translateY(0);
-            box-shadow: none;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: #fff;
-        }
-        .btn-primary:hover {
-            background: #c0392b;
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: #fff;
-        }
-        .btn-success:hover {
-            background: #27ae60;
-        }
-
-        .btn-info {
-            background: #3498db;
-            color: #fff;
-        }
-        .btn-info:hover {
-            background: #2980b9;
-        }
-
-        .btn-warning {
-            background: var(--warning);
-            color: #fff;
-        }
-        .btn-warning:hover {
-            background: #e67e22;
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--text);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-        .btn-outline:hover {
-            border-color: var(--accent2);
-            color: var(--accent2);
-        }
-        .btn-outline.active {
-            border-color: var(--accent2);
-            color: var(--accent2);
-            background: rgba(78, 205, 196, 0.15);
-        }
-
-        .btn-sm {
-            padding: 7px 14px;
-            font-size: 0.8rem;
-        }
-
-        .btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        select,
-        input[type="range"] {
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(0, 0, 0, 0.3);
-            color: var(--text);
-            font-size: 0.9rem;
-            font-family: inherit;
-            outline: none;
-        }
-
-        select:focus,
-        input[type="range"]:focus {
-            border-color: var(--accent2);
-        }
-
-        select option {
-            background: var(--panel);
-            color: var(--text);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-        }
-
-        .stat-card {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            padding: 12px 14px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .stat-card .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--accent2);
-            line-height: 1.2;
-        }
-
-        .stat-card .stat-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 5px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-
-        .progress-bar .fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent2), var(--accent));
-            border-radius: 5px;
-            transition: width 0.4s ease;
-        }
-
-        .status-message {
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            text-align: center;
-            min-height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.3s;
-        }
-
-        .status-message.success {
-            background: rgba(46, 204, 113, 0.2);
-            border-color: var(--success);
-            color: #2ecc71;
-        }
-        .status-message.warning {
-            background: rgba(243, 156, 18, 0.2);
-            border-color: var(--warning);
-            color: #f39c12;
-        }
-        .status-message.info {
-            background: rgba(52, 152, 219, 0.2);
-            border-color: #3498db;
-            color: #5dade2;
-        }
-
-        .speed-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .speed-control input[type="range"] {
-            flex: 1;
-            min-width: 120px;
-            accent-color: var(--accent2);
-        }
-        .speed-label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            min-width: 45px;
-            text-align: right;
-        }
-
-        .legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .legend-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .history-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            max-height: 80px;
-            overflow-y: auto;
-            padding: 4px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-        }
-        .history-chip {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 4px;
-            padding: 2px 6px;
-            font-size: 0.7rem;
-            font-family: 'Courier New', monospace;
-            color: var(--text-muted);
-        }
-
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 1.6rem;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .board-wrapper {
-                max-width: 100%;
-            }
-            .cell .move-number {
-                font-size: 0.85rem;
-            }
-            .cell .knight-icon {
-                font-size: 1.5rem;
-            }
-            .cell .priority-number {
-                width: 14px;
-                height: 14px;
-                font-size: 0.55rem;
-                top: 1px;
-                right: 1px;
-            }
-        }
-    </style>
+  <!-- Dados estruturados do curso -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": "Fotografia Além da Imagem",
+    "description": "Desenvolva o olhar fotográfico e crie imagens com intenção, identidade e significado — mesmo com equipamentos simples.",
+    "url": "https://fotografiaalemdaimagem.com/",
+    "image": "https://fotografiaalemdaimagem.com/images/og-image.jpg",
+    "inLanguage": "pt-BR",
+    "courseMode": "online",
+    "author": {
+      "@type": "Person",
+      "name": "Alex Macedo",
+      "sameAs": "https://www.instagram.com/alexmacedofotografia/"
+    },
+    "provider": {
+      "@type": "Person",
+      "name": "Alex Macedo",
+      "sameAs": "https://www.instagram.com/alexmacedofotografia/"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": 145.00,
+      "priceCurrency": "BRL",
+      "availability": "https://schema.org/InStock",
+      "url": "https://pay.hotmart.com/S55585420V?off=jcdc63k7"
+    },
+    "hasCourseInstance": {
+      "@type": "CourseInstance",
+      "courseMode": "online",
+      "courseWorkload": "PT1H",
+      "inLanguage": "pt-BR"
+    }
+  }
+  </script>
 </head>
 <body>
-    <body>
-    <div style="max-width: 1200px; width: 100%; margin: 0 auto 0 auto;">
-        <h1 style="
-            text-align: center;
-            font-size: 2.8rem;
-            font-weight: 900;
-            margin-bottom: 20px;
-            padding: 16px 24px;
-            background: linear-gradient(135deg, rgba(78,205,196,0.15), rgba(233,69,96,0.15));
-            border: 2px solid rgba(78,205,196,0.4);
-            border-radius: 16px;
-            color: #4ecdc4;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-shadow: 0 0 20px rgba(78,205,196,0.5), 0 0 40px rgba(233,69,96,0.3);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
-        ">TESTESTESTESTESTESTES</h1>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+
+  <!-- Hero -->
+  <header class="hero" id="inicio">
+    <img
+      class="hero__media"
+      src="images/hero-alta-qualidade.jpeg"
+      alt="Silhueta de um fotógrafo caminhando em um campo de capim alto ao entardecer."
+      width="1996"
+      height="2048"
+      fetchpriority="high"
+      decoding="async"
+    >
+    <div class="hero__overlay" aria-hidden="true"></div>
+
+    <div class="container hero__inner">
+      <div class="hero__content">
+        <p class="eyebrow">
+          <span class="eyebrow__line" aria-hidden="true"></span>
+          Curso online · Alex Macedo
+        </p>
+        <h1>Fotografia<br>Além da Imagem</h1>
+        <p class="hero__promise">Desenvolva o olhar fotográfico e crie imagens com intenção, identidade e significado — mesmo com equipamentos simples.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="https://pay.hotmart.com/S55585420V?off=jcdc63k7" target="_blank" rel="noopener noreferrer" data-cta="hero">Quero me inscrever</a>
+          <p class="hero__meta">11 módulos · 1h de vídeo · Acesso vitalício · Certificado incluso</p>
+        </div>
+      </div>
+      <p class="hero__scroll" aria-hidden="true">Role para descobrir <span></span></p>
     </div>
-    <div class="container">
-    <div class="container">
-        <!-- Seção do Tabuleiro -->
-        <div class="board-section">
-            <h1>♞ Passeio do Cavalo</h1>
-            <p class="subtitle">
-                <strong>Heurística de Warnsdorff</strong> — O cavalo deve visitar todas as casas
-                exatamente uma vez. A cada passo, escolhe-se a casa com <strong>menos</strong>
-                movimentos futuros possíveis.
-            </p>
-            <div class="board-wrapper">
-                <div class="board" id="board"></div>
-            </div>
-            <div style="margin-top: 14px; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;">
-                <div class="legend">
-                    <span class="legend-item"><span class="legend-dot" style="background:#3498db;"></span> Posição atual</span>
-                    <span class="legend-item"><span class="legend-dot" style="background:#2ecc71;"></span> Movimentos possíveis</span>
-                    <span class="legend-item"><span class="legend-dot" style="background:#ff6b6b;"></span> Prioridade (Warnsdorff)</span>
-                    <span class="legend-item"><span class="legend-dot" style="background:#4ecdc4;"></span> Início</span>
-                    <span class="legend-item"><span class="legend-dot" style="background:#e94560;"></span> Fim</span>
-                </div>
-            </div>
+  </header>
+
+  <main id="conteudo" tabindex="-1">
+    <!-- Vídeo de vendas -->
+    <section class="section video-sales" id="video" aria-labelledby="video-title">
+      <div class="container video-sales__inner" data-reveal>
+        <p class="eyebrow"><span class="eyebrow__line" aria-hidden="true"></span>Conheça o curso</p>
+        <h2 id="video-title">Uma amostra do que você vai encontrar.</h2>
+        <div class="video-sales__embed">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/MlR1fPLTnyA?rel=0"
+            title="Fotografia Além da Imagem — apresentação do curso"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <noscript>
+          <p class="video-sales__fallback"><a href="https://www.youtube.com/watch?v=MlR1fPLTnyA" target="_blank" rel="noopener noreferrer">Assista à apresentação no YouTube</a></p>
+        </noscript>
+        <a class="btn btn--primary" href="https://pay.hotmart.com/S55585420V?off=jcdc63k7" target="_blank" rel="noopener noreferrer" data-cta="video">Quero me inscrever</a>
+      </div>
+    </section>
+
+    <!-- Autor -->
+    <section class="section about" id="autor" aria-label="Sobre o autor">
+      <div class="container about__grid">
+        <figure class="about__media" data-reveal>
+          <img
+            src="images/homem_apontando_camera_pordosol.jpg"
+            alt="Alex Macedo, fotógrafo de cabelos longos, aponta para o horizonte com uma câmera na mão em contraluz."
+            width="799"
+            height="529"
+            loading="lazy"
+            decoding="async"
+          >
+          <figcaption>Alex Macedo · fotógrafo documentarista</figcaption>
+        </figure>
+
+        <div class="about__content" data-reveal>
+          <p class="eyebrow"><span class="eyebrow__line" aria-hidden="true"></span>Sobre o autor</p>
+          <p>Alex Macedo é fotógrafo documentarista e produtor audiovisual, com mais de 10 anos de experiência. Seu trabalho já recebeu reconhecimento internacional, incluindo premiação pela <strong>National Geographic</strong>. Através do curso, compartilha não apenas técnica, mas a forma de observar, perceber a luz e encontrar significado nas cenas mais simples do dia a dia.</p>
+
+          <ul class="about__facts">
+            <li>
+              <strong>10+</strong>
+              <span>anos de experiência</span>
+            </li>
+            <li>
+              <strong>Documental</strong>
+              <span>fotografia e audiovisual</span>
+            </li>
+            <li>
+              <strong>National Geographic</strong>
+              <span>reconhecimento internacional</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Daltonismo -->
+    <section class="section daltonismo" id="daltonismo" aria-labelledby="daltonismo-title">
+      <div class="container daltonismo__grid">
+        <div class="daltonismo__content" data-reveal>
+          <p class="eyebrow"><span class="eyebrow__line" aria-hidden="true"></span>Daltonismo e fotografia</p>
+          <h2 id="daltonismo-title">O olhar antes da técnica.</h2>
+          <p>“Sou daltônico, e durante muito tempo achei que isso seria um obstáculo para fotografar.</p>
+          <p>Mas foi justamente essa característica que me levou a prestar mais atenção à luz, às formas, aos contrastes e aos momentos.</p>
+          <p>Hoje, o daltonismo não é uma limitação no meu trabalho. Ele faz parte da minha maneira de enxergar e interpretar a realidade através da fotografia.”</p>
+          <p class="daltonismo__signature">— Alex Macedo</p>
+        </div>
+        <figure class="daltonismo__media" data-reveal>
+          <img src="images/quebra_panela.jpeg" alt="Cena da festividade do quebra-panela na feira livre, em preto e branco, exemplo de como o contraste guia a construção do olhar." width="1600" height="1066" loading="lazy" decoding="async">
+          <figcaption>Fotografia em preto e branco · Feira Livre de Parelhas</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- National Geographic -->
+    <section class="section natgeo" id="natgeo" aria-labelledby="natgeo-title">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow"><span class="eyebrow__line" aria-hidden="true"></span>Reconhecimento internacional</p>
+          <h2 id="natgeo-title">Premiado pela National Geographic.</h2>
+          <p class="section-intro">Em 2015, uma fotografia da série <em>Vidas Cinzas</em> foi destaque no concurso semanal da National Geographic e exposta na mídia digital da revista. Um reconhecimento que veio do olhar documental construído no sertão — e que hoje sustenta cada aula do curso.</p>
+        </div>
+        <div class="natgeo__grid">
+          <figure class="natgeo__item" data-reveal>
+            <img
+              src="images/menina_no_celular_national_geograph.png"
+              alt="A fotografia premiada pela National Geographic em 2015, da série Vidas Cinzas."
+              width="1500"
+              height="1000"
+              loading="lazy"
+              decoding="async"
+            >
+            <figcaption>A fotografia premiada · Série Vidas Cinzas (2015)</figcaption>
+          </figure>
+          <figure class="natgeo__item natgeo__item--portrait" data-reveal>
+            <img
+              src="images/trofel-national-geograph.jpeg"
+              alt="Alex Macedo recebendo o troféu do concurso da National Geographic."
+              width="901"
+              height="1280"
+              loading="lazy"
+              decoding="async"
+            >
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Portfólio -->
+    <section class="section portfolio" id="portfolio" aria-labelledby="portfolio-title">
+      <div class="container">
+        <div class="section-head section-head--split" data-reveal>
+          <div>
+            <p class="eyebrow"><span class="eyebrow__line" aria-hidden="true"></span>Portfólio</p>
+            <h2 id="portfolio-title">Um olhar além da imagem.</h2>
+          </div>
+          <div class="portfolio__intro">
+            <p class="section-intro">A fotografia está nos grandes momentos, mas também naqueles pequenos instantes que acontecem diante de nós todos os dias.</p>
+            <p class="section-intro">Um gesto, um olhar, uma luz, um encontro, uma despedida, uma cena simples que, por um instante, revela algo especial.</p>
+          </div>
         </div>
 
-        <!-- Seção de Controles -->
-        <div class="controls-section">
-            <div class="control-group">
-                <h3>⚙️ Configuração</h3>
-                <div class="control-row">
-                    <label style="font-size:0.85rem; color:var(--text-muted);">Tamanho:</label>
-                    <select id="boardSize" style="min-width:70px;">
-                        <option value="5">5×5</option>
-                        <option value="6">6×6</option>
-                        <option value="7">7×7</option>
-                        <option value="8" selected>8×8</option>
-                        <option value="9">9×9</option>
-                        <option value="10">10×10</option>
-                    </select>
-                    <button class="btn btn-primary btn-sm" id="btnReset" title="Reiniciar o jogo">🔄 Novo Jogo</button>
-                </div>
-                <div style="margin-top:10px;">
-                    <label style="font-size:0.85rem; color:var(--text-muted);">Posição inicial:</label>
-                    <div class="control-row" style="margin-top:6px;">
-                        <select id="startX" style="min-width:60px;"></select>
-                        <span style="color:var(--text-muted);">×</span>
-                        <select id="startY" style="min-width:60px;"></select>
-                        <button class="btn btn-outline btn-sm" id="btnSetStart">Definir Início</button>
-                    </div>
-                </div>
+        <div class="portfolio__grid">
+          <figure class="portfolio__item portfolio__item--featured" data-reveal>
+            <div class="portfolio__media">
+              <img
+                src="images/menino_no_barco.jpeg"
+                alt="Menino em um barco, registro da série Retratos."
+                width="1166"
+                height="1600"
+                loading="lazy"
+                decoding="async"
+              >
             </div>
+            <span class="portfolio__badge">Destaque</span>
+            <figcaption class="portfolio__caption">Menino no barco · Série Retratos</figcaption>
+          </figure>
 
-            <div class="control-group">
-                <h3>🎮 Controles</h3>
-                <div class="control-row">
-                    <button class="btn btn-success" id="btnAuto" title="Executar a Heurística de Warnsdorff automaticamente">
-                        ▶ Auto (Warnsdorff)
-                    </button>
-                    <button class="btn btn-info" id="btnStep" title="Executar um passo da heurística">
-                        ⏭ Passo
-                    </button>
-                    <button class="btn btn-warning btn-sm" id="btnUndo" title="Desfazer último movimento">
-                        ↩ Desfazer
-                    </button>
-                </div>
-                <div class="speed-control" style="margin-top:12px;">
-                    <span style="font-size:0.8rem; color:var(--text-muted);">🐢</span>
-                    <input type="range" id="speedSlider" min="1" max="10" value="5" step="1">
-                    <span style="font-size:0.8rem; color:var(--text-muted);">🐇</span>
-                    <span class="speed-label" id="speedLabel">Médio</span>
-                </div>
-                <div class="control-row" style="margin-top:10px;">
-                    <button class="btn btn-outline btn-sm" id="btnShowPriorities" title="Mostrar os valores de prioridade nas casas alcançáveis">
-                        🔢 Mostrar Prioridades
-                    </button>
-                    <button class="btn btn-outline btn-sm" id="btnShowPath" title="Mostrar a sequência do caminho com números">
-                        🛤 Mostrar Caminho
-                    </button>
-                </div>
+          <figure class="portfolio__item portfolio__item--portrait" data-reveal>
+            <div class="portfolio__media">
+              <img
+                src="images/pipoqueira_ao_longe.jpeg"
+                alt="Pipoqueiro visto ao longe em uma rua do sertão."
+                width="640"
+                height="960"
+                loading="lazy"
+                decoding="async"
+              >
             </div>
+            <figcaption class="portfolio__caption">Pipoqueira ao longe · Cena de rua</figcaption>
+          </figure>
 
-            <div class="control-group">
-                <h3>📊 Estatísticas</h3>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="statMoves">0</div>
-                        <div class="stat-label">Movimentos</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="statVisited">0</div>
-                        <div class="stat-label">Casas</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="statTotal">0</div>
-                        <div class="stat-label">Total</div>
-                    </div>
-                </div>
-                <div class="progress-bar">
-                    <div class="fill" id="progressFill" style="width:0%;"></div>
-                </div>
-                <div id="statusMessage" class="status-message" style="margin-top:10px;">
-                    🔔 Clique em uma casa para começar, ou use "Auto" para ver a heurística em ação.
-                </div>
+          <figure class="portfolio__item portfolio__item--landscape" data-reveal>
+            <div class="portfolio__media">
+              <img
+                src="images/vaqueiros-sitios-tibir-pedra-lavrada-PB.jpeg"
+                alt="Vaqueiros reunidos no Sítio Tibiri."
+                width="2048"
+                height="1365"
+                loading="lazy"
+                decoding="async"
+              >
             </div>
+            <figcaption class="portfolio__caption">Vaqueiros · Sítio Tibiri, PB</figcaption>
+          </figure>
 
-            <div class="control-group">
-                <h3>📜 Histórico do Caminho</h3>
-                <div class="history-bar" id="historyBar">
-                    <span style="color:var(--text-muted); font-size:0.8rem;">Nenhum movimento ainda...</span>
-                </div>
+          <figure class="portfolio__item portfolio__item--landscape" data-reveal>
+            <div class="portfolio__media">
+              <img
+                src="images/homem_nu_casa_acabada.jpeg"
+                alt="Estudo do corpo masculino em paisagem natural."
+                width="1600"
+                height="1066"
+                loading="lazy"
+                decoding="async"
+              >
             </div>
+            <figcaption class="portfolio__caption">Estudo do corpo · Luz natural</figcaption>
+          </figure>
 
-            <div class="control-group" style="font-size:0.8rem; color:var(--text-muted); line-height:1.6;">
-                <h3>📖 Sobre a Heurística</h3>
-                <p>
-                    Proposta por <strong>H. C. von Warnsdorff em 1823</strong>, a regra diz:
-                    a cada passo, o cavalo deve ir para a casa que possui o
-                    <strong style="color:var(--accent2);">menor número de movimentos futuros possíveis</strong>.
-                    Isso prioriza as casas "vulneráveis" (com poucas saídas),
-                    evitando becos sem saída no final do percurso.
-                </p>
-                <p style="margin-top:6px;">
-                    <em>Nota:</em> A heurística não garante solução em 100% dos casos,
-                    mas é altamente eficiente para o tabuleiro 8×8.
-                </p>
+          <figure class="portfolio__item portfolio__item--landscape" data-reveal>
+            <div class="portfolio__media">
+              <img
+                src="images/quebra_panela.jpeg"
+                alt="Cena da festividade do quebra-panela na feira livre."
+                width="1600"
+                height="1066"
+                loading="lazy"
+                decoding="async"
+              >
             </div>
+            <figcaption class="portfolio__caption">Quebra-panela · Feira Livre de Parelhas</figcaption>
+          </figure>
+
+          <figure class="portfolio__item portfolio__item--portrait" data-reveal>
+            <div class="portfolio__media">
+              <img
+                src="images/pernas_e_sapatos_idoso.jpg"
+                alt="Detalhe das pernas e sapatos de uma pessoa sentada."
+                width="556"
+                height="799"
+                loading="lazy"
+                decoding="async"
+              >
+            </div>
+            <figcaption class="portfolio__caption">Detalhe · Pernas e sapatos</figcaption>
+          </figure>
+
+          <figure class="portfolio__item portfolio__item--landscape" data-reveal>
+            <div class="portfolio__media">
+              <img
+                src="images/velho_vendendor_de_pipoca.jpeg"
+                alt="Retrato de um velho vendedor de pipoca."
+                width="1600"
+                height="1066"
+                loading="lazy"
+                decoding="async"
+              >
+            </div>
+            <figcaption class="portfolio__caption">Vendedor de pipoca · Retrato</figcaption>
+          </figure>
         </div>
+      </div>
+    </section>
+
+    <!-- Aprendizado -->
+    <section class="section learn" id="aprender" aria-labelledby="aprender-title">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow"><span class="eyebrow__line" aria-hidden="true"></span>O que você vai aprender</p>
+          <h2 id="aprender-title">Técnica e olhar, juntos.</h2>
+          <p class="section-intro">Aqui, você vai aprender a observar a luz, perceber detalhes, construir composições e transformar momentos simples em imagens com mais intenção, identidade e significado.</p>
+        </div>
+
+        <div class="learn__grid">
+          <article class="card" data-reveal>
+            <span class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <circle cx="12" cy="12" r="4"/>
+                <path d="M12 2v2"/>
+                <path d="M12 20v2"/>
+                <path d="m4.93 4.93 1.41 1.41"/>
+                <path d="m17.66 17.66 1.41 1.41"/>
+                <path d="M2 12h2"/>
+                <path d="M20 12h2"/>
+                <path d="m6.34 17.66-1.41 1.41"/>
+                <path d="m19.07 4.93-1.41 1.41"/>
+              </svg>
+            </span>
+            <p>Perceber a luz e entender como ela transforma completamente uma fotografia.</p>
+          </article>
+
+          <article class="card" data-reveal>
+            <span class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </span>
+            <p>Desenvolver um olhar mais atento para criar enquadramentos com identidade e significado.</p>
+          </article>
+
+          <article class="card" data-reveal>
+            <span class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="m14.31 8 5.74 9.94"/>
+                <path d="M9.69 8h11.48"/>
+                <path d="m7.38 12 5.74-9.94"/>
+                <path d="M9.69 16 3.95 6.06"/>
+                <path d="M14.31 16H2.83"/>
+                <path d="m16.62 12-5.74 9.94"/>
+              </svg>
+            </span>
+            <p>Aprender e utilizar os 5 pilares da fotografia para assumir o controle da sua câmera com confiança.</p>
+          </article>
+
+          <article class="card" data-reveal>
+            <span class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <rect width="18" height="18" x="3" y="3" rx="2"/>
+                <path d="M3 9h18"/>
+                <path d="M3 15h18"/>
+                <path d="M9 3v18"/>
+                <path d="M15 3v18"/>
+              </svg>
+            </span>
+            <p>Criar composições fotográficas com mais intenção, equilíbrio e beleza.</p>
+          </article>
+
+          <article class="card" data-reveal>
+            <span class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path d="M12 2v8"/>
+                <path d="m4.93 10.93 1.41 1.41"/>
+                <path d="M2 18h2"/>
+                <path d="M20 18h2"/>
+                <path d="m19.07 10.93-1.41 1.41"/>
+                <path d="M22 22H2"/>
+                <path d="m8 6 4-4 4 4"/>
+                <path d="M16 18a4 4 0 0 0-8 0"/>
+              </svg>
+            </span>
+            <p>Compreender a relação entre luz, forma e emoção na construção de uma imagem.</p>
+          </article>
+
+          <article class="card" data-reveal>
+            <span class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path d="M10 2h4"/>
+                <path d="M12 14v-4"/>
+                <path d="M12 14 15 11"/>
+                <circle cx="12" cy="14" r="8"/>
+              </svg>
+            </span>
+            <p>Aplicar os fundamentos técnicos da fotografia de maneira simples, prática e criativa.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- O que está incluso -->
+    <section class="section included" id="incluso" aria-labelledby="incluso-title">
+      <div class="container included__grid">
+        <div class="included__content" data-reveal>
+          <p class="eyebrow"><span class="eyebrow__line" aria-hidden="true"></span>O que está incluso</p>
+          <h2 id="incluso-title">Tudo o que você precisa para começar.</h2>
+
+          <ul class="included__list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>
+              11 módulos em vídeo
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>
+              1 hora de conteúdo
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>
+              Certificado digital
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>
+              Garantia incondicional de 7 dias
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>
+              Acesso vitalício
+            </li>
+          </ul>
+
+          <a class="text-link" href="#investimento">Conheça o investimento</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Investimento -->
+    <section class="section investment" id="investimento" aria-labelledby="investimento-title">
+      <div class="container investment__inner">
+        <p class="eyebrow" data-reveal><span class="eyebrow__line" aria-hidden="true"></span>Investimento</p>
+        <h2 id="investimento-title" data-reveal>A transformação do seu olhar começa aqui.</h2>
+        <p class="investment__price-old" data-reveal>
+          De <s>R$ 347,00</s>
+          <span class="investment__badge">58% OFF</span>
+        </p>
+        <p class="investment__price" data-reveal>R$ 145,00</p>
+        <p class="investment__save" data-reveal>Você economiza R$ 202,00</p>
+        <p class="investment__note" data-reveal>11 módulos · 1h de vídeo · acesso vitalício · certificado incluso</p>
+        <a class="btn btn--primary btn--large" href="https://pay.hotmart.com/S55585420V?off=jcdc63k7" target="_blank" rel="noopener noreferrer" data-cta="investment" data-reveal>Quero me inscrever</a>
+        <p class="investment__guarantee" data-reveal>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+          Garantia incondicional de 7 dias · Pagamento seguro pela Hotmart
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section faq" id="faq" aria-labelledby="faq-title">
+      <div class="container faq__inner">
+        <div class="faq__head" data-reveal>
+          <p class="eyebrow"><span class="eyebrow__line" aria-hidden="true"></span>Perguntas frequentes</p>
+          <h2 id="faq-title">Antes de começar.</h2>
+          <p>Ainda com dúvidas? <a href="mailto:alexmacedo.contato@gmail.com">Fale comigo por e-mail</a>.</p>
+        </div>
+
+        <div class="faq__list" data-reveal>
+          <details name="faq">
+            <summary>Para quem é o curso?</summary>
+            <p>Para fotógrafos amadores e iniciantes que querem desenvolver identidade visual e um olhar autoral, mesmo sem experiência avançada.</p>
+          </details>
+          <details name="faq">
+            <summary>Preciso de equipamento caro?</summary>
+            <p>Não. O curso ensina técnica e olhar; você pode começar com a câmera que tem — inclusive o celular.</p>
+          </details>
+          <details name="faq">
+            <summary>Como acesso o conteúdo?</summary>
+            <p>Após a confirmação da compra, você recebe por e-mail o acesso à área de membros da Hotmart. O acesso é vitalício — você pode rever o conteúdo sempre que quiser.</p>
+          </details>
+          <details name="faq">
+            <summary>E se eu não gostar?</summary>
+            <p>Você tem 7 dias de garantia incondicional. Basta solicitar o reembolso dentro do prazo.</p>
+          </details>
+          <details name="faq">
+            <summary>Quais são as formas de pagamento?</summary>
+            <p>Cartão de crédito, Pix, boleto e PayPal, conforme as opções disponíveis no checkout da Hotmart.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="footer" id="contato">
+    <div class="container footer__grid">
+      <div class="footer__brand">
+        <p class="footer__logo">Fotografia<br><em>Além da Imagem</em></p>
+        <p class="footer__tagline">Técnica, luz e olhar para contar histórias que o automático não vê.</p>
+      </div>
+
+      <div class="footer__contact">
+        <p class="footer__label">Contato</p>
+        <a href="mailto:alexmacedo.contato@gmail.com">alexmacedo.contato@gmail.com</a>
+        <a href="tel:+5584998592636">(84)&nbsp;99859&#8209;2636</a>
+        <a href="https://www.instagram.com/alexmacedofotografia/" target="_blank" rel="noopener noreferrer">@alexmacedofotografia</a>
+      </div>
+
+      <div class="footer__meta">
+        <p class="footer__label">Curso online</p>
+        <p>11 módulos · 1h de vídeo<br>Acesso vitalício</p>
+        <a class="footer__cta" href="https://pay.hotmart.com/S55585420V?off=jcdc63k7" target="_blank" rel="noopener noreferrer">Quero me inscrever</a>
+      </div>
     </div>
 
-    <script>
-        (function() {
-            // ============ ESTADO DO JOGO ============
-            let boardSize = 8;
-            let board = []; // matriz boardSize x boardSize, 0 = não visitado, >0 = número do movimento
-            let position = null; // {x, y}
-            let moveCount = 0;
-            let history = []; // array de {x, y} em ordem
-            let isAutoPlaying = false;
-            let autoPlayTimer = null;
-            let showPriorities = false;
-            let showPath = true;
+    <div class="container footer__bottom">
+      <p>© <span id="ano-atual">2026</span> Alex Macedo. Todos os direitos reservados.</p>
+      <div class="footer__legal">
+        <a href="https://hotmart.com/pt-br/pp/" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>
+        <a href="#inicio">Voltar ao topo ↑</a>
+      </div>
+    </div>
+  </footer>
 
-            // Elementos DOM
-            const boardEl = document.getElementById('board');
-            const boardSizeSelect = document.getElementById('boardSize');
-            const startXSelect = document.getElementById('startX');
-            const startYSelect = document.getElementById('startY');
-            const btnReset = document.getElementById('btnReset');
-            const btnAuto = document.getElementById('btnAuto');
-            const btnStep = document.getElementById('btnStep');
-            const btnUndo = document.getElementById('btnUndo');
-            const btnSetStart = document.getElementById('btnSetStart');
-            const btnShowPriorities = document.getElementById('btnShowPriorities');
-            const btnShowPath = document.getElementById('btnShowPath');
-            const speedSlider = document.getElementById('speedSlider');
-            const speedLabel = document.getElementById('speedLabel');
-            const statMoves = document.getElementById('statMoves');
-            const statVisited = document.getElementById('statVisited');
-            const statTotal = document.getElementById('statTotal');
-            const progressFill = document.getElementById('progressFill');
-            const statusMessage = document.getElementById('statusMessage');
-            const historyBar = document.getElementById('historyBar');
+  <script>
+    (() => {
+      const revealElements = document.querySelectorAll('[data-reveal]');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealAll = () => {
+        revealElements.forEach((element) => element.classList.add('is-visible'));
+      };
 
-            // ============ FUNÇÕES AUXILIARES ============
-            function getTotalCells() {
-                return boardSize * boardSize;
-            }
+      const yearElement = document.getElementById('ano-atual');
+      if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+      }
 
-            function isValidPos(x, y) {
-                return x >= 0 && x < boardSize && y >= 0 && y < boardSize;
-            }
-
-            function getPossibleMoves(pos) {
-                const moves = [];
-                const knightMoves = [
-                    [2, -1],
-                    [2, 1],
-                    [-2, -1],
-                    [-2, 1],
-                    [1, -2],
-                    [1, 2],
-                    [-1, -2],
-                    [-1, 2]
-                ];
-                for (const [dx, dy] of knightMoves) {
-                    const nx = pos.x + dx;
-                    const ny = pos.y + dy;
-                    if (isValidPos(nx, ny) && board[nx][ny] === 0) {
-                        moves.push({ x: nx, y: ny });
-                    }
-                }
-                return moves;
-            }
-
-            function getWarnsdorffPriority(pos) {
-                // Número de movimentos futuros possíveis a partir de pos
-                return getPossibleMoves(pos).length;
-            }
-
-            function getBestMove() {
-                if (!position) return null;
-                const moves = getPossibleMoves(position);
-                if (moves.length === 0) return null;
-                if (moves.length === 1) return moves[0];
-
-                // Calcular prioridade para cada movimento
-                const movesWithPriority = moves.map(m => ({
-                    pos: m,
-                    priority: getWarnsdorffPriority(m)
-                }));
-
-                // Encontrar o menor valor de prioridade
-                const minPriority = Math.min(...movesWithPriority.map(m => m.priority));
-
-                // Filtrar os movimentos com menor prioridade
-                const bestMoves = movesWithPriority.filter(m => m.priority === minPriority);
-
-                // Em caso de empate, escolher aleatoriamente
-                const chosen = bestMoves[Math.floor(Math.random() * bestMoves.length)];
-                return chosen.pos;
-            }
-
-            function getSpeedMs() {
-                const val = parseInt(speedSlider.value);
-                // val 1 = 800ms, val 10 = 50ms (escala logarítmica aproximada)
-                const ms = Math.round(800 / Math.pow(val, 1.6));
-                return Math.max(50, Math.min(800, ms));
-            }
-
-            function updateSpeedLabel() {
-                const val = parseInt(speedSlider.value);
-                if (val <= 3) speedLabel.textContent = 'Lento';
-                else if (val <= 6) speedLabel.textContent = 'Médio';
-                else speedLabel.textContent = 'Rápido';
-            }
-
-            // ============ INICIALIZAÇÃO ============
-            function initBoard() {
-                board = Array.from({ length: boardSize }, () => Array(boardSize).fill(0));
-                moveCount = 0;
-                history = [];
-                position = null;
-                stopAutoPlay();
-                updateSelects();
-                render();
-                updateStats();
-                updateHistoryBar();
-                setStatus('🔔 Clique em uma casa para começar, ou use "Auto" para ver a heurística em ação.', 'info');
-            }
-
-            function updateSelects() {
-                // Preencher selects de posição inicial
-                startXSelect.innerHTML = '';
-                startYSelect.innerHTML = '';
-                for (let i = 0; i < boardSize; i++) {
-                    const optX = document.createElement('option');
-                    optX.value = i;
-                    optX.textContent = i + 1;
-                    startXSelect.appendChild(optX);
-                    const optY = document.createElement('option');
-                    optY.value = i;
-                    optY.textContent = i + 1;
-                    startYSelect.appendChild(optY);
-                }
-                startXSelect.value = 0;
-                startYSelect.value = 0;
-            }
-
-            function setStartPosition(x, y) {
-                if (board[x][y] !== 0 && moveCount > 0) {
-                    setStatus('⚠️ Posição já visitada! Escolha outra.', 'warning');
-                    return;
-                }
-                // Resetar tudo
-                board = Array.from({ length: boardSize }, () => Array(boardSize).fill(0));
-                moveCount = 0;
-                history = [];
-                position = { x, y };
-                board[x][y] = 1;
-                moveCount = 1;
-                history.push({ x, y });
-                stopAutoPlay();
-                render();
-                updateStats();
-                updateHistoryBar();
-                setStatus(`🐴 Posição inicial definida em (${x + 1}, ${y + 1})`, 'info');
-            }
-
-            function moveTo(pos) {
-                if (!position) return;
-                if (board[pos.x][pos.y] !== 0) return;
-                moveCount++;
-                board[pos.x][pos.y] = moveCount;
-                history.push({ x: pos.x, y: pos.y });
-                position = { x: pos.x, y: pos.y };
-                render();
-                updateStats();
-                updateHistoryBar();
-
-                const totalCells = getTotalCells();
-                if (moveCount === totalCells) {
-                    stopAutoPlay();
-                    setStatus(`🎉 PASSEIO COMPLETO! Todas as ${totalCells} casas foram visitadas! 🎉`, 'success');
-                } else {
-                    const possible = getPossibleMoves(position);
-                    if (possible.length === 0) {
-                        stopAutoPlay();
-                        setStatus(`⚠️ Beco sem saída! Visitou ${moveCount} de ${totalCells} casas.`, 'warning');
-                    }
-                }
-            }
-
-            function undoMove() {
-                if (history.length <= 1) {
-                    setStatus('⚠️ Nada para desfazer.', 'warning');
-                    return;
-                }
-                stopAutoPlay();
-                const lastPos = history.pop();
-                board[lastPos.x][lastPos.y] = 0;
-                moveCount--;
-                position = history[history.length - 1];
-                render();
-                updateStats();
-                updateHistoryBar();
-                setStatus(`↩ Movimento desfeito. Posição atual: (${position.x + 1}, ${position.y + 1})`, 'info');
-            }
-
-            function autoStep() {
-                const bestMove = getBestMove();
-                if (bestMove) {
-                    moveTo(bestMove);
-                    return true;
-                } else {
-                    stopAutoPlay();
-                    const totalCells = getTotalCells();
-                    if (moveCount < totalCells) {
-                        setStatus(`⚠️ A heurística parou em ${moveCount} de ${totalCells} casas.`, 'warning');
-                    }
-                    return false;
-                }
-            }
-
-            function startAutoPlay() {
-                if (isAutoPlaying) {
-                    stopAutoPlay();
-                    return;
-                }
-                if (!position) {
-                    setStatus('⚠️ Defina uma posição inicial primeiro!', 'warning');
-                    return;
-                }
-                const totalCells = getTotalCells();
-                if (moveCount === totalCells) {
-                    setStatus('🎉 Passeio já completo!', 'success');
-                    return;
-                }
-                isAutoPlaying = true;
-                btnAuto.textContent = '⏸ Parar';
-                btnAuto.classList.remove('btn-success');
-                btnAuto.classList.add('btn-warning');
-                setStatus('▶ Executando Heurística de Warnsdorff...', 'info');
-
-                function tick() {
-                    if (!isAutoPlaying) return;
-                    const success = autoStep();
-                    if (success && isAutoPlaying) {
-                        const ms = getSpeedMs();
-                        autoPlayTimer = setTimeout(tick, ms);
-                    }
-                }
-                // Pequeno atraso antes do primeiro movimento
-                autoPlayTimer = setTimeout(tick, 300);
-            }
-
-            function stopAutoPlay() {
-                isAutoPlaying = false;
-                if (autoPlayTimer) {
-                    clearTimeout(autoPlayTimer);
-                    autoPlayTimer = null;
-                }
-                btnAuto.textContent = '▶ Auto (Warnsdorff)';
-                btnAuto.classList.remove('btn-warning');
-                btnAuto.classList.add('btn-success');
-            }
-
-            function setStatus(msg, type) {
-                statusMessage.textContent = msg;
-                statusMessage.className = 'status-message';
-                if (type === 'success') statusMessage.classList.add('success');
-                else if (type === 'warning') statusMessage.classList.add('warning');
-                else if (type === 'info') statusMessage.classList.add('info');
-            }
-
-            function updateStats() {
-                statMoves.textContent = moveCount;
-                const visited = moveCount;
-                const total = getTotalCells();
-                statVisited.textContent = visited;
-                statTotal.textContent = total;
-                const pct = total > 0 ? Math.round((visited / total) * 100) : 0;
-                progressFill.style.width = pct + '%';
-            }
-
-            function updateHistoryBar() {
-                if (history.length === 0) {
-                    historyBar.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">Nenhum movimento ainda...</span>';
-                    return;
-                }
-                const chips = history.map((pos, idx) => {
-                    const label = `${idx + 1}:(${pos.x + 1},${pos.y + 1})`;
-                    return `<span class="history-chip">${label}</span>`;
-                }).join('');
-                historyBar.innerHTML = chips;
-                historyBar.scrollTop = historyBar.scrollHeight;
-            }
-
-            // ============ RENDERIZAÇÃO ============
-            function getVisitedColor(step, totalSteps) {
-                // Interpolar de verde (início) para vermelho (fim)
-                if (totalSteps <= 1) return '#4ecdc4';
-                const t = (step - 1) / (totalSteps - 1);
-                // Gradiente: #4ecdc4 -> #e94560
-                const r = Math.round(78 + (233 - 78) * t);
-                const g = Math.round(205 + (69 - 205) * t);
-                const b = Math.round(196 + (96 - 196) * t);
-                return `rgb(${r},${g},${b})`;
-            }
-
-            function render() {
-                boardEl.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
-                boardEl.innerHTML = '';
-
-                const totalCells = getTotalCells();
-                const possibleMoves = position ? getPossibleMoves(position) : [];
-                const possibleSet = new Set(possibleMoves.map(p => `${p.x},${p.y}`));
-                const prioritiesMap = {};
-                if (showPriorities && position) {
-                    for (const m of possibleMoves) {
-                        const key = `${m.x},${m.y}`;
-                        prioritiesMap[key] = getWarnsdorffPriority(m);
-                    }
-                }
-
-                for (let r = 0; r < boardSize; r++) {
-                    for (let c = 0; c < boardSize; c++) {
-                        const cell = document.createElement('div');
-                        const isLight = (r + c) % 2 === 0;
-                        cell.className = `cell ${isLight ? 'light' : 'dark'}`;
-
-                        const cellValue = board[r][c];
-                        const key = `${r},${c}`;
-                        const isCurrent = position && position.x === r && position.y === c;
-                        const isPossible = possibleSet.has(key);
-                        const isVisited = cellValue > 0;
-
-                        if (isVisited) {
-                            cell.classList.add('visited');
-                            const color = getVisitedColor(cellValue, totalCells);
-                            cell.style.backgroundColor = color;
-                            cell.style.color = '#fff';
-                            if (showPath || isCurrent) {
-                                cell.innerHTML = `<span class="move-number">${cellValue}</span>`;
-                            }
-                            if (cellValue === 1) {
-                                cell.classList.add('start-cell');
-                            }
-                            if (cellValue === totalCells) {
-                                cell.style.boxShadow = 'inset 0 0 0 4px #e94560';
-                            }
-                        }
-
-                        if (isCurrent) {
-                            cell.classList.add('current');
-                            // Mostrar cavalo
-                            if (!showPath && cellValue === 0) {
-                                cell.innerHTML = '<span class="knight-icon">♞</span>';
-                            } else if (cellValue > 0) {
-                                cell.innerHTML = `<span class="move-number">${cellValue}</span>`;
-                            }
-                            cell.style.color = '#fff';
-                        }
-
-                        if (isPossible && !isVisited) {
-                            cell.classList.add('possible');
-                            if (showPriorities && prioritiesMap[key] !== undefined) {
-                                const prio = prioritiesMap[key];
-                                cell.innerHTML = `<span class="priority-number">${prio}</span>`;
-                            }
-                        }
-
-                        // Evento de clique
-                        cell.addEventListener('click', () => {
-                            handleCellClick(r, c);
-                        });
-
-                        boardEl.appendChild(cell);
-                    }
-                }
-            }
-
-            function handleCellClick(r, c) {
-                if (isAutoPlaying) {
-                    stopAutoPlay();
-                    setStatus('⏸ Pausado.', 'info');
-                    return;
-                }
-
-                if (!position) {
-                    // Definir posição inicial
-                    setStartPosition(r, c);
-                    return;
-                }
-
-                // Verificar se é um movimento possível
-                const possibleMoves = getPossibleMoves(position);
-                const isPossible = possibleMoves.some(m => m.x === r && m.y === c);
-
-                if (isPossible) {
-                    moveTo({ x: r, y: c });
-                } else if (position.x === r && position.y === c) {
-                    setStatus('🐴 Você já está nesta posição.', 'info');
-                } else {
-                    setStatus('❌ Movimento inválido! O cavalo move em "L" (2+1 casas).', 'warning');
-                }
-            }
-
-            // ============ EVENT LISTENERS ============
-            boardSizeSelect.addEventListener('change', () => {
-                boardSize = parseInt(boardSizeSelect.value);
-                stopAutoPlay();
-                initBoard();
-                setStatus(`📐 Tabuleiro ${boardSize}×${boardSize} criado.`, 'info');
+      if (!('IntersectionObserver' in window) || reduceMotion) {
+        revealAll();
+      } else {
+        try {
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+              }
             });
+          }, {
+            threshold: 0.12,
+            rootMargin: '0px 0px -8% 0px'
+          });
 
-            btnReset.addEventListener('click', () => {
-                stopAutoPlay();
-                initBoard();
-                setStatus('🔄 Novo jogo iniciado.', 'info');
+          revealElements.forEach((element) => observer.observe(element));
+        } catch {
+          revealAll();
+        }
+      }
+
+      const faqDetails = Array.from(document.querySelectorAll('.faq details'));
+      if (faqDetails.length > 0 && !('name' in document.createElement('details'))) {
+        faqDetails.forEach((detail) => {
+          detail.addEventListener('toggle', () => {
+            if (!detail.open) return;
+            faqDetails.forEach((item) => {
+              if (item !== detail) item.open = false;
             });
-
-            btnSetStart.addEventListener('click', () => {
-                stopAutoPlay();
-                const x = parseInt(startXSelect.value);
-                const y = parseInt(startYSelect.value);
-                setStartPosition(x, y);
-            });
-
-            btnAuto.addEventListener('click', () => {
-                if (isAutoPlaying) {
-                    stopAutoPlay();
-                    setStatus('⏸ Pausado.', 'info');
-                } else {
-                    startAutoPlay();
-                }
-            });
-
-            btnStep.addEventListener('click', () => {
-                if (isAutoPlaying) {
-                    stopAutoPlay();
-                }
-                if (!position) {
-                    setStatus('⚠️ Defina uma posição inicial primeiro!', 'warning');
-                    return;
-                }
-                const success = autoStep();
-                if (!success) {
-                    // autoStep já define status
-                }
-            });
-
-            btnUndo.addEventListener('click', () => {
-                undoMove();
-            });
-
-            btnShowPriorities.addEventListener('click', () => {
-                showPriorities = !showPriorities;
-                btnShowPriorities.classList.toggle('active', showPriorities);
-                render();
-                if (showPriorities) {
-                    setStatus('🔢 Prioridades de Warnsdorff exibidas nas casas alcançáveis.', 'info');
-                } else {
-                    setStatus('🔢 Prioridades ocultas.', 'info');
-                }
-            });
-
-            btnShowPath.addEventListener('click', () => {
-                showPath = !showPath;
-                btnShowPath.classList.toggle('active', showPath);
-                render();
-                if (showPath) {
-                    setStatus('🛤 Caminho com números exibido.', 'info');
-                } else {
-                    setStatus('🛤 Números do caminho ocultos.', 'info');
-                }
-            });
-
-            speedSlider.addEventListener('input', () => {
-                updateSpeedLabel();
-                if (isAutoPlaying) {
-                    // Reiniciar timer com nova velocidade
-                    stopAutoPlay();
-                    startAutoPlay();
-                }
-            });
-
-            // Teclado
-            document.addEventListener('keydown', (e) => {
-                if (e.key === ' ') {
-                    e.preventDefault();
-                    if (isAutoPlaying) {
-                        stopAutoPlay();
-                        setStatus('⏸ Pausado.', 'info');
-                    } else {
-                        startAutoPlay();
-                    }
-                } else if (e.key === 's' || e.key === 'S') {
-                    if (isAutoPlaying) stopAutoPlay();
-                    if (position) autoStep();
-                } else if (e.key === 'r' || e.key === 'R') {
-                    stopAutoPlay();
-                    initBoard();
-                    setStatus('🔄 Novo jogo iniciado.', 'info');
-                } else if (e.key === 'u' || e.key === 'U') {
-                    undoMove();
-                } else if (e.key === 'p' || e.key === 'P') {
-                    showPriorities = !showPriorities;
-                    btnShowPriorities.classList.toggle('active', showPriorities);
-                    render();
-                }
-            });
-
-            // ============ INICIALIZAÇÃO ============
-            updateSpeedLabel();
-            btnShowPriorities.classList.add('active');
-            showPriorities = true;
-            btnShowPath.classList.add('active');
-            showPath = true;
-            initBoard();
-
-            // Mensagem de boas-vindas
-            setStatus('🔔 Bem-vindo! Clique em uma casa para definir o início, ou use "Auto" para ver a Heurística de Warnsdorff em ação.', 'info');
-
-            console.log('♞ Passeio do Cavalo — Heurística de Warnsdorff');
-            console.log('Atalhos: [Espaço] Auto/Parar | [S] Passo | [R] Reiniciar | [U] Desfazer | [P] Prioridades');
-        })();
-    </script>
+          });
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
