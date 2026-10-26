@@ -495,7 +495,7 @@
         <div class="section-head section-head--split" data-reveal>
           <div>
             <p class="eyebrow"><span class="eyebrow__line" aria-hidden="true"></span>Portfólio</p>
-            <h2 id="portfolio-title">A fotografia vai além da imagem.</h2>
+            <h2 id="portfolio-title">A fotografia vai além de imagens.</h2>
           </div>
           <div class="portfolio__intro">
             <p class="section-intro">A fotografia está nos grandes momentos, mas também naqueles pequenos instantes que acontecem diante de nós todos os dias.</p>
@@ -514,10 +514,12 @@
                 <source type="image/webp"
                         srcset="images/responsive/menino_no_barco-480w.webp 480w, images/responsive/menino_no_barco-800w.webp 800w"
                         sizes="(max-width: 767px) 100vw, 66vw">
+                <!-- ⚠️ ALTERAÇÃO 9: width/height ajustados à proporção 3/4 da moldura (600x800),
+                     evitando CLS e mantendo o atributo semântico coerente com o aspect-ratio do CSS. -->
                 <img
                   src="images/responsive/menino_no_barco-800w.jpg"
                   alt="Menino em um barco, registro da série Retratos."
-                  width="800" height="1098"
+                  width="600" height="800"
                   loading="eager"
                   decoding="async"
                 >
@@ -580,6 +582,8 @@
                 <source type="image/webp"
                         srcset="images/responsive/pernas_e_sapatos_idoso-400w.webp 400w"
                         sizes="(max-width: 767px) 100vw, 33vw">
+                <!-- ⚠️ ALTERAÇÃO 10 (documentação): object-position inline é o padrão
+                     para exceções pontuais. Mantido para o foco no calçado. -->
                 <img
                   src="images/responsive/pernas_e_sapatos_idoso-400w.jpg"
                   alt="Detalhe das pernas e sapatos de uma pessoa sentada."
@@ -675,6 +679,59 @@
             </span>
             <p>Aplicar os fundamentos técnicos da fotografia de maneira simples, prática e criativa.</p>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      Depoimentos de alunos.
+      Vídeo único (ID YouTube: 3FqffXb6418). Facade + youtube-nocookie.
+      Contrato JS: [data-video-facade] com [data-video-id] (mesmo do #video).
+      Preload da thumb NÃO é feito: imagem está abaixo da dobra (LCP é o hero).
+    -->
+    <section class="section testimonials" id="depoimentos" aria-labelledby="testimonials-title">
+      <div class="container">
+        <div class="section-head section-head--split" data-reveal>
+          <div>
+            <p class="eyebrow"><span class="eyebrow__line" aria-hidden="true"></span>Depoimentos</p>
+            <h2 id="testimonials-title">Quem já está enxergando além.</h2>
+          </div>
+          <div class="testimonials__intro">
+            <p class="section-intro">A transformação do olhar começa na primeira aula — e aparece nas fotografias de quem coloca a técnica em prática.</p>
+          </div>
+        </div>
+
+        <div class="testimonials__grid">
+          <figure class="testimonial" data-reveal>
+            <div class="testimonial__embed" data-video-facade data-video-id="3FqffXb6418">
+              <button type="button" class="testimonial__play" aria-label="Reproduzir depoimento de aluno do curso Fotografia Além da Imagem">
+                <!-- miniatura decorativa: alt vazio intencional (label está no botão) -->
+                <img
+                  src="https://i.ytimg.com/vi/3FqffXb6418/maxresdefault.jpg"
+                  alt=""
+                  width="1280" height="720"
+                  loading="lazy" decoding="async"
+                  onerror="this.src='https://i.ytimg.com/vi/3FqffXb6418/hqdefault.jpg'"
+                >
+                <span class="testimonial__play-icon" aria-hidden="true">
+                  <svg viewBox="0 0 68 48" width="68" height="48" focusable="false" aria-hidden="true">
+                    <path fill="#f00" d="M66.5 7.6a8.5 8.5 0 0 0-6-6C55.2.5 34 .5 34 .5S12.8.5 7.5 1.6a8.5 8.5 0 0 0-6 6A88.6 88.6 0 0 0 .5 24a88.6 88.6 0 0 0 1 16.4 8.5 8.5 0 0 0 6 6c5.3 1.1 26.5 1.1 26.5 1.1s21.2 0 26.5-1.1a8.5 8.5 0 0 0 6-6A88.6 88.6 0 0 0 67.5 24a88.6 88.6 0 0 0-1-16.4z"/>
+                    <path fill="#fff" d="M27 34.5 45 24 27 13.5z"/>
+                  </svg>
+                </span>
+              </button>
+            </div>
+            <figcaption class="testimonial__caption">
+              <blockquote class="testimonial__quote">
+                Wanderley Filho - Jornalista
+              </blockquote>
+            </figcaption>
+          </figure>
+          <noscript>
+            <p class="video-sales__fallback">
+              <a href="https://www.youtube.com/watch?v=3FqffXb6418" target="_blank" rel="noopener noreferrer">Assista ao depoimento no YouTube</a>
+            </p>
+          </noscript>
         </div>
       </div>
     </section>
@@ -980,7 +1037,7 @@
 
       const setupVideoFacade = () => {
         document.querySelectorAll('[data-video-facade]').forEach((facade) => {
-          const btn = facade.querySelector('.video-sales__play');
+          const btn = facade.querySelector('.video-sales__play', '.testimonial__play');
           if (!btn) return;
 
           btn.addEventListener('click', () => {
@@ -1040,3 +1097,4 @@
   </script>
 </body>
 </html>
+
