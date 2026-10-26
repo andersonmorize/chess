@@ -726,12 +726,12 @@
                 Wanderley Filho - Jornalista
               </blockquote>
             </figcaption>
+            <noscript>
+              <p class="video-sales__fallback">
+                <a href="https://www.youtube.com/watch?v=3FqffXb6418" target="_blank" rel="noopener noreferrer">Assista ao depoimento no YouTube</a>
+              </p>
+            </noscript>
           </figure>
-          <noscript>
-            <p class="video-sales__fallback">
-              <a href="https://www.youtube.com/watch?v=3FqffXb6418" target="_blank" rel="noopener noreferrer">Assista ao depoimento no YouTube</a>
-            </p>
-          </noscript>
         </div>
       </div>
     </section>
@@ -1037,7 +1037,7 @@
 
       const setupVideoFacade = () => {
         document.querySelectorAll('[data-video-facade]').forEach((facade) => {
-          const btn = facade.querySelector('.video-sales__play', '.testimonial__play');
+          const btn = facade.querySelector('.video-sales__play, .testimonial__play');
           if (!btn) return;
 
           btn.addEventListener('click', () => {
@@ -1046,7 +1046,7 @@
 
             const iframe = document.createElement('iframe');
             iframe.src = `${YOUTUBE_EMBED_BASE}${id}?autoplay=1&rel=0`;
-            iframe.title = 'Fotografia Além da Imagem — apresentação do curso';
+            iframe.title = btn.getAttribute('aria-label') || 'Vídeo';
             iframe.loading = 'lazy';
             iframe.referrerPolicy = 'strict-origin-when-cross-origin';
             iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
