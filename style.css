@@ -2,79 +2,6 @@
    Fotografia Além da Imagem — landing page
    HTML + CSS puro, sem build e sem frameworks.
    ========================================================= */
-/* === MÓDULOS (accordion) === */
-.modules__list{
-  display:flex;
-  flex-direction:column;
-  gap:.75rem;
-  max-width:52rem;
-  margin-inline:auto;
-}
-
-.module{
-  border:1px solid rgba(245,242,236,.12);
-  border-radius:.75rem;
-  background:rgba(245,242,236,.02);
-  transition:border-color .2s ease,background-color .2s ease;
-}
-.module:hover{border-color:rgba(232,196,119,.35)}
-.module[open]{border-color:rgba(232,196,119,.45);background:rgba(245,242,236,.04)}
-
-.module__summary{
-  display:flex;
-  align-items:baseline;
-  gap:1rem;
-  padding:1.1rem 1.4rem;
-  cursor:pointer;
-  list-style:none; /* remove o triângulo nativo */
-}
-.module__summary::-webkit-details-marker{display:none}
-
-.module__summary::after{
-  content:"";
-  margin-left:auto;
-  width:.55rem;
-  height:.55rem;
-  border-right:1.5px solid var(--fg-muted);
-  border-bottom:1.5px solid var(--fg-muted);
-  transform:rotate(45deg);
-  transition:transform .2s ease;
-  flex-shrink:0;
-}
-.module[open] .module__summary::after{
-  transform:rotate(-135deg);
-}
-
-.module__number{
-  font-family:var(--sans);
-  font-size:.72rem;
-  font-weight:600;
-  letter-spacing:.12em;
-  color:var(--accent);
-  opacity:.85;
-  flex-shrink:0;
-  min-width:1.8rem;
-}
-
-.module__title{
-  margin:0;
-  font-size:clamp(1rem,1.6vw,1.2rem);
-  line-height:1.3;
-}
-
-.module__body{
-  padding:0 1.4rem 1.3rem 4.2rem; /* alinha com o título (após o número) */
-}
-.module__body p{
-  margin:0;
-  color:var(--fg-muted);
-  font-size:.95rem;
-}
-
-@media (max-width:600px){
-  .module__summary{padding:.95rem 1rem;gap:.75rem}
-  .module__body{padding:0 1rem 1rem 1rem}
-}
 
 :root {
   --ink: #0a0a0a;
@@ -140,9 +67,23 @@ svg {
   display: block;
 }
 
+/* ⚠️ ALTERAÇÃO 1: height:auto apenas como fallback.
+   Imagens que precisam preencher molduras (cover) sobrescrevem
+   explicitamente com height:100% nas regras específicas abaixo. */
 img {
   max-width: 100%;
   height: auto;
+}
+
+/* Imagens que devem preencher 100% do contêiner (molduras com aspect-ratio) */
+.hero__media,
+.about__media img,
+.daltonismo__media img,
+.portfolio__media img,
+.natgeo__item img,
+.testimonial__play img {
+  height: 100%;
+  width: 100%;
 }
 
 a {
@@ -328,6 +269,8 @@ footer[id] {
   isolation: isolate;
 }
 
+/* ⚠️ ALTERAÇÃO 2: ponto focal ajustado para manter o fotógrafo
+   visível em telas verticais (mobile) e horizontais (desktop). */
 .hero__media {
   position: absolute;
   inset: 0;
@@ -336,6 +279,14 @@ footer[id] {
   height: 100%;
   object-fit: cover;
   object-position: center 38%;
+}
+
+/* Em mobile, o sujeito (fotógrafo) tende a sair do quadro inferior;
+   sobe o enquadramento para mantê-lo visível */
+@media (max-width: 599px) {
+  .hero__media {
+    object-position: center 30%;
+  }
 }
 
 .hero__overlay {
@@ -541,13 +492,16 @@ footer[id] {
   position: relative;
 }
 
+/* ⚠️ ALTERAÇÃO 3: a imagem original é 480x318 (≈3/2), não 4/3.
+   Forçar 4/3 cortava demais o topo (céu) e a base (corpo).
+   Mantemos 3/2 nativo e centralizamos no rosto do fotógrafo. */
 .about__media img {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 2;
   border: 1px solid rgba(10, 10, 10, 0.08);
   filter: grayscale(100%) contrast(1.05);
   object-fit: cover;
-  object-position: center 45%;
+  object-position: center 40%;
 }
 
 .about__media figcaption {
@@ -641,12 +595,15 @@ footer[id] {
   pointer-events: none;
 }
 
+/* ⚠️ ALTERAÇÃO 4: aspect-ratio 3/2 casa com o nativo (1200x800).
+   Foco levemente acima do centro para preservar a ação do quebra-panela. */
 .daltonismo__media img {
   width: 100%;
   aspect-ratio: 3 / 2;
   border: 1px solid rgba(10, 10, 10, 0.08);
   filter: grayscale(100%) contrast(1.05);
   object-fit: cover;
+  object-position: center 45%;
 }
 
 .daltonismo__media figcaption {
@@ -663,6 +620,7 @@ footer[id] {
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.75);
   text-transform: uppercase;
 }
+
 
 /* Portfólio */
 /* === PORTFÓLIO === */
@@ -708,13 +666,28 @@ footer[id] {
   transform:scale(1.03);
 }
 
-/* Proporções por modificador */
+/* ⚠️ ALTERAÇÃO 5: proporções alinhadas ao nativo de cada imagem.
+   Evita cortes excessivos e "buracos" na grade. */
 .portfolio__item--landscape .portfolio__media{aspect-ratio:3 / 2}
 .portfolio__item--portrait  .portfolio__media{aspect-ratio:2 / 3}
 .portfolio__item--featured  .portfolio__media{aspect-ratio:3 / 4}
 
-/* Featured ocupa 2 colunas */
+/* Featured: 2 colunas x 2 linhas no desktop (preenche o buraco da grade).
+   No mobile volta a 1 coluna / 1 linha (regra já existente no @media). */
 .portfolio__item--featured{grid-column:span 2}
+
+/* ⚠️ Ponto focal individual por imagem do portfólio.
+   Ajuste estes valores conforme o "assunto" de cada foto. */
+.portfolio__item--featured .portfolio__media img{
+  object-position:center 25%; /* menino no barco: preserva o rosto no topo */
+}
+.portfolio__item--portrait .portfolio__media img{
+  object-position:center 40%;
+}
+.portfolio__item--landscape .portfolio__media img{
+  object-position:center 50%;
+}
+/* Exceção: pernas/sapatos já tem style inline (center 30%), mantido */
 
 /* Badge */
 .portfolio__badge{
@@ -757,6 +730,120 @@ footer[id] {
   .portfolio__item--full{max-width:none}
 }
 
+/* === DEPOIMENTOS === */
+.testimonials {
+  background: var(--paper);
+}
+
+.testimonials__intro .section-intro {
+  margin-top: 0;
+}
+
+.testimonials__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(28px, 5vw, 48px);
+  max-width: 960px;
+  margin-inline: auto;
+}
+
+.testimonial {
+  margin: 0;
+}
+
+/* Facade 16:9 — mesma técnica do #video (evita CLS ao trocar por iframe) */
+.testimonial__embed {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--ink);
+}
+
+.testimonial__play {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  color: inherit;
+}
+
+.testimonial__play img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* ⚠️ ALTERAÇÃO 8: thumb do YouTube é 16:9 nativa, mas o rosto do
+     depoente costuma ficar na metade superior. */
+  object-position: center 35%;
+  transition: transform 0.6s var(--ease), filter 0.4s var(--ease);
+}
+
+.testimonial__play-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: inline-flex;
+  width: 68px;
+  height: 48px;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.45));
+  transition: transform 0.3s var(--ease), filter 0.3s var(--ease);
+}
+
+.testimonial__play-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Legenda com aspas tipográficas (marca editorial, não decoração) */
+.testimonial__caption {
+  margin-top: 20px;
+  padding-left: 4px;
+  border-left: 2px solid var(--accent);
+}
+
+.testimonial__quote {
+  margin: 0;
+  padding-left: 16px;
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  font-style: italic;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.testimonial__quote-mark {
+  display: block;
+  margin-left: 16px;
+  color: var(--accent);
+  font-family: var(--serif);
+  font-size: 2.4rem;
+  line-height: 0.6;
+}
+
+/* Hover apenas com ponteiro (mesma convenção do projeto) */
+@media (hover: hover) {
+  .testimonial__play:hover img {
+    filter: brightness(0.92);
+    transform: scale(1.02);
+  }
+
+  .testimonial__play:hover .testimonial__play-icon {
+    filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.6));
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+}
+
+@media (max-width: 767px) {
+  .testimonial__quote {
+    font-size: 1.05rem;
+  }
+}
+
 /* National Geographic */
 .natgeo {
   background: var(--mist);
@@ -774,21 +861,26 @@ footer[id] {
   margin: 0;
 }
 
+/* ⚠️ ALTERAÇÃO 7: height:100% + object-fit:cover (consistente com o resto). */
 .natgeo__item img {
   width: 100%;
-  height: auto;
+  height: 100%;
   aspect-ratio: 3 / 2;
   border-radius: var(--radius);
   object-fit: cover;
+  object-position: center 40%;
 }
 
 .natgeo__item--portrait img {
   width: 100%;
+  height: 100%;
   max-width: 420px;
   max-height: 560px;
   margin-inline: auto;
   aspect-ratio: 3 / 4;
   object-fit: cover;
+  /* ⚠️ foco no rosto de Alex com o troféu (topo da foto) */
+  object-position: center 30%;
 }
 
 .natgeo__item figcaption {
@@ -1115,6 +1207,82 @@ footer[id] {
   color: var(--white);
 }
 
+/* === MÓDULOS (accordion) === */
+.modules { background: var(--paper); } /* já é o padrão, mas torne explícito */
+.modules__list{
+  display:flex;
+  flex-direction:column;
+  gap:.75rem;
+  max-width:52rem;
+  margin-inline:auto;
+}
+
+.module{
+  border:1px solid rgba(245,242,236,.12);
+  border-radius:.75rem;
+  background:rgba(245,242,236,.02);
+  transition:border-color .2s ease,background-color .2s ease;
+}
+.module:hover{border-color:rgba(232,196,119,.35)}
+.module[open]{border-color:rgba(232,196,119,.45);background:rgba(245,242,236,.04)}
+
+.module__summary{
+  display:flex;
+  align-items:baseline;
+  gap:1rem;
+  padding:1.1rem 1.4rem;
+  cursor:pointer;
+  list-style:none; /* remove o triângulo nativo */
+}
+.module__summary::-webkit-details-marker{display:none}
+
+.module__summary::after{
+  content:"";
+  margin-left:auto;
+  width:.55rem;
+  height:.55rem;
+  border-right:1.5px solid var(--fg-muted);
+  border-bottom:1.5px solid var(--fg-muted);
+  transform:rotate(45deg);
+  transition:transform .2s ease;
+  flex-shrink:0;
+}
+.module[open] .module__summary::after{
+  transform:rotate(-135deg);
+}
+
+.module__number{
+  font-family:var(--sans);
+  font-size:.72rem;
+  font-weight:600;
+  letter-spacing:.12em;
+  color:var(--accent);
+  opacity:.85;
+  flex-shrink:0;
+  min-width:1.8rem;
+}
+
+.module__title{
+  margin:0;
+  font-size:clamp(1rem,1.6vw,1.2rem);
+  line-height:1.3;
+}
+
+.module__body{
+  padding:0 1.4rem 1.3rem 4.2rem; /* alinha com o título (após o número) */
+}
+.module__body p{
+  margin:0;
+  color:var(--fg-muted);
+  font-size:.95rem;
+}
+
+@media (max-width:600px){
+  .module__summary{padding:.95rem 1rem;gap:.75rem}
+  .module__body{padding:0 1rem 1rem 1rem}
+}
+
+
 
 
 /* Animação de entrada */
@@ -1249,11 +1417,16 @@ footer[id] {
 
   .portfolio__grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    /* ⚠️ ALTERAÇÃO 6: altura de linha controlada para o featured não
+       esticar demais e deixar buracos. */
+    grid-auto-rows: min-content;
+    align-items: start;
   }
 
   .portfolio__item--featured {
     grid-column: span 2;
-    grid-row: span 2;
+    /* ⚠️ REMOVIDO grid-row: span 2 — a moldura 3/4 já é alta o suficiente;
+       forçar 2 linhas criava vãos vazios ao lado. */
   }
 
   .natgeo__grid {
