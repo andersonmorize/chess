@@ -32,14 +32,6 @@
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
-  <!--
-    Fontes:
-    - Reduzidas aos pesos realmente usados (Cormorant 400/500/itálico 400; Inter 400/600).
-    - display=swap garante texto visível imediatamente.
-    - RECOMENDAÇÃO: migrar para self-host (woff2 em /fonts/) e remover os preconnects
-      abaixo. Self-host elimina o round-trip a fonts.gstatic.com e melhora o FCP em
-      ~150–300 ms no 4G lento.
-  -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://pay.hotmart.com">
@@ -48,9 +40,23 @@
     rel="stylesheet"
   >
 
-  <!-- Preload do hero: AVIF primeiro, WebP como fallback de formato -->
-  <link rel="preload" as="image" href="images/hero-alta-qualidade.avif" type="image/avif" fetchpriority="high">
-  <link rel="preload" as="image" href="images/hero-alta-qualidade.webp" type="image/webp" fetchpriority="high">
+  <!--
+    Tarefa 4 — Preload do hero com imagesrcset/imagesizes.
+    AVIF primeiro (primeira <source> do <picture>); WebP como segunda opção.
+    O JPEG virou fallback e NÃO é mais pré-carregado.
+  -->
+  <link rel="preload" as="image"
+        href="images/hero-1200.avif"
+        imagesrcset="images/hero-768.avif 768w, images/hero-1200.avif 1200w, images/hero-1600.avif 1600w"
+        imagesizes="100vw"
+        type="image/avif"
+        fetchpriority="high">
+  <link rel="preload" as="image"
+        href="images/hero-1200.webp"
+        imagesrcset="images/hero-768.webp 768w, images/hero-1200.webp 1200w, images/hero-1600.webp 1600w"
+        imagesizes="100vw"
+        type="image/webp"
+        fetchpriority="high">
 
   <!--
     CSS CRÍTICO INLINE:
@@ -146,13 +152,12 @@
       overflow:hidden;
       isolation:isolate;
       color:var(--fg);
-      background:#111; /* cor de fundo para evitar flash branco antes do LCP */
+      background:#111;
     }
     .hero picture{display:block;position:absolute;inset:0;z-index:-2}
     .hero__media{
       width:100%;height:100%;
       object-fit:cover;
-      /* garante que a imagem ocupe a área do hero e seja pintada cedo */
       object-position:center 40%;
     }
     .hero__overlay{
@@ -193,11 +198,6 @@
     }
   </style>
 
-  <!--
-    CSS não-crítico carregado de forma não-bloqueante.
-    O navegador baixa em paralelo, mas não bloqueia o render.
-    Quando termina, aplica as regras restantes (seções abaixo da dobra, FAQ, footer etc.).
-  -->
   <link
     rel="stylesheet"
     href="style.css"
@@ -252,21 +252,20 @@
 
   <!-- Hero -->
   <header class="hero" id="inicio">
-    <!--
-      Hero como <picture> com AVIF → WebP → JPEG.
-      O <img> é filho direto de <picture> e continua sendo o candidato a LCP.
-      Removido o <source media="(min-width: 0px)"> redundante que pode confundir o heurístico.
-    -->
     <picture>
-      <source srcset="images/hero-alta-qualidade.avif" type="image/avif">
-      <source srcset="images/hero-alta-qualidade.webp" type="image/webp">
+      <source type="image/avif"
+              srcset="images/hero-768.avif 768w, images/hero-1200.avif 1200w, images/hero-1600.avif 1600w"
+              sizes="100vw">
+      <source type="image/webp"
+              srcset="images/hero-768.webp 768w, images/hero-1200.webp 1200w, images/hero-1600.webp 1600w"
+              sizes="100vw">
       <img
         class="hero__media"
-        src="images/hero-alta-qualidade.jpeg"
+        src="images/hero-1600.jpeg"
         alt="Silhueta de um fotógrafo caminhando em um campo de capim alto ao entardecer."
-        width="1996"
-        height="2048"
+        width="1600" height="1642"
         fetchpriority="high"
+        loading="eager"
         decoding="async"
       >
     </picture>
@@ -296,15 +295,6 @@
         <p class="eyebrow"><span class="eyebrow__line" aria-hidden="true"></span>Conheça o curso</p>
         <h2 id="video-title">Uma amostra do que você vai encontrar.</h2>
 
-        <!--
-          FACADE DO YOUTUBE:
-          - Antes do clique: thumbnail local + botão play (zero JS de terceiros).
-          - No clique: injeta o iframe real do YouTube (autoplay).
-          - Economiza ~1 MB de JS e elimina TBT de terceiros no load inicial.
-          - A thumbnail usa o próprio thumbnail do YouTube (i.ytimg.com) para não
-            precisar de arquivo local. Se preferir 100% local, baixe a thumbnail
-            para images/video-thumb.jpg e troque o src abaixo.
-        -->
         <div class="video-sales__embed" data-video-facade data-video-id="MlR1fPLTnyA">
           <button
             type="button"
@@ -340,7 +330,9 @@
       <div class="container about__grid">
         <figure class="about__media" data-reveal>
           <picture>
-            <source srcset="images/homem_apontando_camera_pordosol.webp" type="image/webp">
+            <source type="image/webp"
+                    srcset="images/homem-apontando-480.webp 480w, images/homem-apontando-799.webp 799w"
+                    sizes="(max-width: 767px) 100vw, 54vw">
             <img
               src="images/homem_apontando_camera_pordosol.jpg"
               alt="Alex Macedo, fotógrafo de cabelos longos, aponta para o horizonte com uma câmera na mão em contraluz."
@@ -388,9 +380,15 @@
         </div>
         <figure class="daltonismo__media" data-reveal>
           <picture>
-            <source srcset="images/quebra_panela.avif" type="image/avif">
-            <source srcset="images/quebra_panela.webp" type="image/webp">
-            <img src="images/quebra_panela.jpeg" alt="Cena da festividade do quebra-panela na feira livre, em preto e branco, exemplo de como o contraste guia a construção do olhar." width="1600" height="1066" loading="lazy" decoding="async">
+            <source type="image/avif"
+                    srcset="images/quebra-panela-480.avif 480w, images/quebra-panela-800.avif 800w, images/quebra-panela-1200.avif 1200w"
+                    sizes="(max-width: 767px) 100vw, 54vw">
+            <source type="image/webp"
+                    srcset="images/quebra-panela-480.webp 480w, images/quebra-panela-800.webp 800w, images/quebra-panela-1200.webp 1200w"
+                    sizes="(max-width: 767px) 100vw, 54vw">
+            <img src="images/quebra-panela-1200.jpeg"
+                 alt="Cena da festividade do quebra-panela na feira livre, em preto e branco, exemplo de como o contraste guia a construção do olhar."
+                 width="1200" height="800" loading="lazy" decoding="async">
           </picture>
         </figure>
       </div>
@@ -407,8 +405,12 @@
         <div class="natgeo__grid">
           <figure class="natgeo__item" data-reveal>
             <picture>
-              <source srcset="images/menina_no_celular_national_geograph.avif" type="image/avif">
-              <source srcset="images/menina_no_celular_national_geograph.webp" type="image/webp">
+              <source type="image/avif"
+                      srcset="images/menina-celular-600.avif 600w, images/menina-celular-900.avif 900w, images/menina-celular-1200.avif 1200w, images/menina-celular-1600.avif 1600w"
+                      sizes="(max-width: 767px) 100vw, 63vw">
+              <source type="image/webp"
+                      srcset="images/menina-celular-600.webp 600w, images/menina-celular-900.webp 900w, images/menina-celular-1200.webp 1200w, images/menina-celular-1600.webp 1600w"
+                      sizes="(max-width: 767px) 100vw, 63vw">
               <img
                 src="images/menina_no_celular_national_geograph.png"
                 alt="A fotografia premiada pela National Geographic em 2015, da série Vidas Cinzas."
@@ -422,7 +424,9 @@
           </figure>
           <figure class="natgeo__item natgeo__item--portrait" data-reveal>
             <picture>
-              <source srcset="images/trofel-national-geograph.webp" type="image/webp">
+              <source type="image/webp"
+                      srcset="images/trofeu-400.webp 400w, images/trofeu-600.webp 600w, images/trofeu-900.webp 900w"
+                      sizes="(max-width: 767px) 420px, 32vw">
               <img
                 src="images/trofel-national-geograph.jpeg"
                 alt="Alex Macedo recebendo o troféu do concurso da National Geographic."
@@ -452,17 +456,22 @@
         </div>
 
         <div class="portfolio__grid">
+          <!-- Featured: 2 cols (span 2×2) em ≥768px; primeiro item → loading="eager" -->
           <figure class="portfolio__item portfolio__item--featured" data-reveal>
             <div class="portfolio__media">
               <picture>
-                <source srcset="images/menino_no_barco.avif" type="image/avif">
-                <source srcset="images/menino_no_barco.webp" type="image/webp">
+                <source type="image/avif"
+                        srcset="images/menino-no-barco-400.avif 400w, images/menino-no-barco-600.avif 600w, images/menino-no-barco-800.avif 800w, images/menino-no-barco-1600.avif 1600w"
+                        sizes="(max-width: 767px) 100vw, 66vw">
+                <source type="image/webp"
+                        srcset="images/menino-no-barco-400.webp 400w, images/menino-no-barco-600.webp 600w, images/menino-no-barco-800.webp 800w, images/menino-no-barco-1600.webp 1600w"
+                        sizes="(max-width: 767px) 100vw, 66vw">
                 <img
-                  src="images/menino_no_barco.jpeg"
+                  src="images/menino-no-barco-1600.jpeg"
                   alt="Menino em um barco, registro da série Retratos."
                   width="1166"
                   height="1600"
-                  loading="lazy"
+                  loading="eager"
                   decoding="async"
                 >
               </picture>
@@ -474,7 +483,9 @@
           <figure class="portfolio__item portfolio__item--portrait" data-reveal>
             <div class="portfolio__media">
               <picture>
-                <source srcset="images/pipoqueira_ao_longe.webp" type="image/webp">
+                <source type="image/webp"
+                        srcset="images/pipoqueira-400.webp 400w, images/pipoqueira-600.webp 600w, images/pipoqueira-640.webp 640w"
+                        sizes="(max-width: 767px) 100vw, 33vw">
                 <img
                   src="images/pipoqueira_ao_longe.jpeg"
                   alt="Pipoqueiro visto ao longe em uma rua do sertão."
@@ -491,13 +502,17 @@
           <figure class="portfolio__item portfolio__item--landscape" data-reveal>
             <div class="portfolio__media">
               <picture>
-                <source srcset="images/vaqueiros-sitios-tibir-pedra-lavrada-PB.avif" type="image/avif">
-                <source srcset="images/vaqueiros-sitios-tibir-pedra-lavrada-PB.webp" type="image/webp">
+                <source type="image/avif"
+                        srcset="images/vaqueiros-480.avif 480w, images/vaqueiros-800.avif 800w, images/vaqueiros-1200.avif 1200w"
+                        sizes="(max-width: 767px) 100vw, 33vw">
+                <source type="image/webp"
+                        srcset="images/vaqueiros-480.webp 480w, images/vaqueiros-800.webp 800w, images/vaqueiros-1200.webp 1200w"
+                        sizes="(max-width: 767px) 100vw, 33vw">
                 <img
-                  src="images/vaqueiros-sitios-tibir-pedra-lavrada-PB.jpeg"
+                  src="images/vaqueiros-1200.jpeg"
                   alt="Vaqueiros reunidos no Sítio Tibiri."
-                  width="2048"
-                  height="1365"
+                  width="1200"
+                  height="800"
                   loading="lazy"
                   decoding="async"
                 >
@@ -509,13 +524,17 @@
           <figure class="portfolio__item portfolio__item--landscape" data-reveal>
             <div class="portfolio__media">
               <picture>
-                <source srcset="images/homem_nu_casa_acabada.avif" type="image/avif">
-                <source srcset="images/homem_nu_casa_acabada.webp" type="image/webp">
+                <source type="image/avif"
+                        srcset="images/homem-nu-casa-480.avif 480w, images/homem-nu-casa-800.avif 800w, images/homem-nu-casa-1200.avif 1200w"
+                        sizes="(max-width: 767px) 100vw, 33vw">
+                <source type="image/webp"
+                        srcset="images/homem-nu-casa-480.webp 480w, images/homem-nu-casa-800.webp 800w, images/homem-nu-casa-1200.webp 1200w"
+                        sizes="(max-width: 767px) 100vw, 33vw">
                 <img
-                  src="images/homem_nu_casa_acabada.jpeg"
+                  src="images/homem-nu-casa-1200.jpeg"
                   alt="Estudo do corpo masculino em paisagem natural."
-                  width="1600"
-                  height="1066"
+                  width="1200"
+                  height="800"
                   loading="lazy"
                   decoding="async"
                 >
@@ -527,13 +546,17 @@
           <figure class="portfolio__item portfolio__item--landscape" data-reveal>
             <div class="portfolio__media">
               <picture>
-                <source srcset="images/quebra_panela.avif" type="image/avif">
-                <source srcset="images/quebra_panela.webp" type="image/webp">
+                <source type="image/avif"
+                        srcset="images/quebra-panela-480.avif 480w, images/quebra-panela-800.avif 800w, images/quebra-panela-1200.avif 1200w"
+                        sizes="(max-width: 767px) 100vw, 33vw">
+                <source type="image/webp"
+                        srcset="images/quebra-panela-480.webp 480w, images/quebra-panela-800.webp 800w, images/quebra-panela-1200.webp 1200w"
+                        sizes="(max-width: 767px) 100vw, 33vw">
                 <img
-                  src="images/quebra_panela.jpeg"
+                  src="images/quebra-panela-1200.jpeg"
                   alt="Cena da festividade do quebra-panela na feira livre."
-                  width="1600"
-                  height="1066"
+                  width="1200"
+                  height="800"
                   loading="lazy"
                   decoding="async"
                 >
@@ -545,7 +568,9 @@
           <figure class="portfolio__item portfolio__item--portrait" data-reveal>
             <div class="portfolio__media">
               <picture>
-                <source srcset="images/pernas_e_sapatos_idoso.webp" type="image/webp">
+                <source type="image/webp"
+                        srcset="images/pernas-sapatos-400.webp 400w, images/pernas-sapatos-556.webp 556w"
+                        sizes="(max-width: 767px) 100vw, 33vw">
                 <img
                   src="images/pernas_e_sapatos_idoso.jpg"
                   alt="Detalhe das pernas e sapatos de uma pessoa sentada."
@@ -559,16 +584,21 @@
             <figcaption class="portfolio__caption">Detalhe · Pernas e sapatos</figcaption>
           </figure>
 
+          <!-- Último item: ocupa a linha toda (1/-1) mas limitado a 720px no CSS -->
           <figure class="portfolio__item portfolio__item--landscape" data-reveal>
             <div class="portfolio__media">
               <picture>
-                <source srcset="images/velho_vendendor_de_pipoca.avif" type="image/avif">
-                <source srcset="images/velho_vendendor_de_pipoca.webp" type="image/webp">
+                <source type="image/avif"
+                        srcset="images/velho-vendedor-480.avif 480w, images/velho-vendedor-800.avif 800w, images/velho-vendedor-1200.avif 1200w"
+                        sizes="(max-width: 767px) 100vw, 720px">
+                <source type="image/webp"
+                        srcset="images/velho-vendedor-480.webp 480w, images/velho-vendedor-800.webp 800w, images/velho-vendedor-1200.webp 1200w"
+                        sizes="(max-width: 767px) 100vw, 720px">
                 <img
-                  src="images/velho_vendendor_de_pipoca.jpeg"
+                  src="images/velho-vendedor-800.jpeg"
                   alt="Retrato de um velho vendedor de pipoca."
-                  width="1600"
-                  height="1066"
+                  width="1200"
+                  height="800"
                   loading="lazy"
                   decoding="async"
                 >
@@ -940,9 +970,7 @@
         });
       }
 
-      /* ---------- FACADE DO YOUTUBE ----------
-         Só injeta o iframe quando o usuário clica. Zero JS de terceiros no load.
-         O iframe usa youtube-nocookie e autoplay=1. */
+      /* ---------- FACADE DO YOUTUBE ---------- */
       document.querySelectorAll('[data-video-facade]').forEach((facade) => {
         const btn = facade.querySelector('.video-sales__play');
         if (!btn) return;
@@ -960,9 +988,7 @@
         }, { once: true });
       });
 
-      /* ---------- DIAGNÓSTICO DE LCP (opcional) ----------
-         Acesse a página com ?debug=lcp para logar o elemento LCP no console.
-         Útil para resolver o erro NO_LCP do Lighthouse. */
+      /* ---------- DIAGNÓSTICO DE LCP (opcional) ---------- */
       if (new URLSearchParams(location.search).get('debug') === 'lcp') {
         try {
           new PerformanceObserver((list) => {
