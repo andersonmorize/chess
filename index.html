@@ -482,19 +482,20 @@
       </div>
     </section>
 
-    <!--
+        <!--
       Portfólio.
-      Modificadores de .portfolio__item:
-        --featured  → item grande (ocupa 2 colunas)
-        --portrait  → proporção vertical
-        --landscape → proporção horizontal
+      Modificadores de .portfolio__item (definem aspect-ratio da moldura):
+        --featured  → 3/4  (ocupa 2 colunas)
+        --portrait  → 2/3
+        --landscape → 3/2
+      object-position ajustável por item via style inline quando necessário.
     -->
     <section class="section portfolio" id="portfolio" aria-labelledby="portfolio-title">
       <div class="container">
         <div class="section-head section-head--split" data-reveal>
           <div>
             <p class="eyebrow"><span class="eyebrow__line" aria-hidden="true"></span>Portfólio</p>
-            <h2 id="portfolio-title">A fotografia vai além da imagem.</h2>
+            <h2 id="portfolio-title">Um olhar além da imagem.</h2>
           </div>
           <div class="portfolio__intro">
             <p class="section-intro">A fotografia está nos grandes momentos, mas também naqueles pequenos instantes que acontecem diante de nós todos os dias.</p>
@@ -590,27 +591,6 @@
             <figcaption class="portfolio__caption">Estudo do corpo · Luz natural</figcaption>
           </figure>
 
-          <figure class="portfolio__item portfolio__item--landscape" data-reveal>
-            <div class="portfolio__media">
-              <picture>
-                <source type="image/avif"
-                        srcset="images/responsive/quebra_panela-480w.avif 480w, images/responsive/quebra_panela-800w.avif 800w, images/responsive/quebra_panela-1200w.avif 1200w"
-                        sizes="(max-width: 767px) 100vw, 33vw">
-                <source type="image/webp"
-                        srcset="images/responsive/quebra_panela-480w.webp 480w, images/responsive/quebra_panela-800w.webp 800w, images/responsive/quebra_panela-1200w.webp 1200w"
-                        sizes="(max-width: 767px) 100vw, 33vw">
-                <img
-                  src="images/responsive/quebra_panela-1200w.jpg"
-                  alt="Cena da festividade do quebra-panela na feira livre."
-                  width="1200" height="800"
-                  loading="lazy"
-                  decoding="async"
-                >
-              </picture>
-            </div>
-            <figcaption class="portfolio__caption">Quebra-panela · Feira Livre de Parelhas</figcaption>
-          </figure>
-
           <!-- Pernas/sapatos: só existe 400w -->
           <figure class="portfolio__item portfolio__item--portrait" data-reveal>
             <div class="portfolio__media">
@@ -633,7 +613,7 @@
             <figcaption class="portfolio__caption">Detalhe · Pernas e sapatos</figcaption>
           </figure>
 
-          <!-- Último item: ocupa linha toda mas max-width 720px -->
+          <!-- Último item: linha toda, max-width 720px -->
           <figure class="portfolio__item portfolio__item--landscape" data-reveal>
             <div class="portfolio__media">
               <picture>
