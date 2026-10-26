@@ -1057,32 +1057,42 @@
         document.querySelectorAll('[data-video-facade]').forEach((facade) => {
           const btn = facade.querySelector('.video-sales__play, .testimonial__play');
           if (!btn) return;
-
+      
           btn.addEventListener('click', () => {
             const id = facade.getAttribute('data-video-id');
             if (!id) return;
-
+      
+            // Parâmetros para minimizar elementos do player
+            const params = new URLSearchParams({
+              autoplay: '1',
+              rel: '0',              // vídeos relacionados: só do mesmo canal
+              modestbranding: '1',    // reduz marca d'água
+              iv_load_policy: '3',    // sem anotações
+              playsinline: '1',       // iOS: não abre player nativo em tela cheia
+              fs: '1',                // permite fullscreen (deixe 1 se quiser o botão)
+              disablekb: '0',
+            });
+      
             const iframe = document.createElement('iframe');
-            iframe.src = `${YOUTUBE_EMBED_BASE}${id}?autoplay=1&rel=0`;
-            iframe.title = btn.getAttribute('aria-label') || 'Vídeo';
+            iframe.src = `${YOUTUBE_EMBED_BASE}${id}?${params.toString()}`;
+            iframe.title = 'Fotografia Além da Imagem — apresentação do curso';
             iframe.loading = 'lazy';
             iframe.referrerPolicy = 'strict-origin-when-cross-origin';
             iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
             iframe.allowFullscreen = true;
-
-            // Evita CLS ao substituir a facade (mesma proporção 16:9)
+      
             iframe.width = 1280;
             iframe.height = 720;
             iframe.style.aspectRatio = '16 / 9';
             iframe.style.width = '100%';
             iframe.style.height = 'auto';
             iframe.style.border = '0';
-
+      
             facade.replaceChildren(iframe);
           }, { once: true });
         });
       };
-
+      
       const setupDebugLcp = () => {
         if (new URLSearchParams(location.search).get('debug') !== 'lcp') return;
         try {
