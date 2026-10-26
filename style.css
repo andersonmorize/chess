@@ -665,93 +665,97 @@ footer[id] {
 }
 
 /* Portfólio */
-.portfolio {
-  background: var(--paper);
+/* === PORTFÓLIO === */
+.portfolio__grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:1rem;
 }
 
-.portfolio__grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 4px;
-  align-items: start;
+.portfolio__item{
+  position:relative;
+  margin:0;
 }
 
-.portfolio__item {
-  position: relative;
-  display: block;
-  margin: 0;
+/* Moldura: define aspect-ratio; a <img> preenche com object-fit */
+.portfolio__media{
+  position:relative;
+  overflow:hidden;
+  border-radius:.6rem;
+  background:rgba(245,242,236,.04);
 }
 
-.portfolio__media {
-  position: relative;
-  overflow: hidden;
-  background: var(--mist);
+/* <picture> como display:contents → <img> vira filha direta de .portfolio__media,
+   permitindo que object-fit/width/height funcionem na moldura */
+.portfolio__media picture{display:contents}
+
+.portfolio__media img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  transition:transform .6s ease;
 }
 
-.portfolio__media::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0;
-  z-index: 1;
-  height: 45%;
-  background: linear-gradient(to top, rgba(10, 10, 10, 0.62), rgba(10, 10, 10, 0));
-  pointer-events: none;
+.portfolio__item:hover .portfolio__media img{
+  transform:scale(1.03);
 }
 
-.portfolio__media img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  transition:
-    filter 0.6s var(--ease),
-    transform 0.6s var(--ease);
+/* Proporções por modificador */
+.portfolio__item--landscape .portfolio__media{aspect-ratio:3 / 2}
+.portfolio__item--portrait  .portfolio__media{aspect-ratio:2 / 3}
+.portfolio__item--featured  .portfolio__media{aspect-ratio:3 / 4}
+
+/* Featured ocupa 2 colunas */
+.portfolio__item--featured{grid-column:span 2}
+
+/* Badge */
+.portfolio__badge{
+  position:absolute;
+  top:.75rem;
+  left:.75rem;
+  padding:.3rem .7rem;
+  border-radius:999px;
+  background:var(--accent);
+  color:#111;
+  font-family:var(--sans);
+  font-size:.72rem;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  z-index:1;
 }
 
-.portfolio__item--featured img {
-  aspect-ratio: 4 / 5;
+/* Legenda */
+.portfolio__caption{
+  margin-top:.6rem;
+  font-size:.82rem;
+  color:var(--fg-muted);
+  letter-spacing:.02em;
 }
 
-.portfolio__item--portrait img {
-  aspect-ratio: 2 / 3;
+/* Último item: linha inteira com largura limitada e centralizado */
+.portfolio__item:last-child{
+  grid-column:1 / -1;
+  max-width:720px;
+  margin-inline:auto;
+  width:100%;
 }
 
-.portfolio__item--landscape img {
-  aspect-ratio: 3 / 2;
-}
-
-.portfolio__item:last-child {
-  grid-column: 1 / -1;
-  max-width: 720px;
-  margin-inline: auto;
-}
-
-.portfolio__badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 2;
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 2px;
-  background: var(--forest);
-  color: var(--white);
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-
-.portfolio__caption {
-  position: absolute;
-  bottom: 1rem;
-  left: 1rem;
-  z-index: 2;
-  max-width: calc(100% - 2rem);
-  color: var(--white);
-  font-size: 1.05rem;
-  line-height: 1.3;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.75);
-  pointer-events: none;
+/* Responsivo */
+@media (max-width:767px){
+  .portfolio__grid{
+    grid-template-columns:1fr;
+  }
+  .portfolio__item--featured{
+    grid-column:auto;
+  }
+  .portfolio__item--featured .portfolio__media{
+    aspect-ratio:3 / 4;
+  }
+  .portfolio__item:last-child{
+    max-width:none;
+  }
 }
 
 /* National Geographic */
